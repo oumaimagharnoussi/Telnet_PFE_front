@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TelnetTeamClient", "..\TelnetTeamClient", "{1A0676D7-13D5-41DA-B9E7-ED3BF2C52510}"
+	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = "SAK"
+		SccAuxPath = "SAK"
+		SccLocalPath = "SAK"
+		SccProvider = "SAK"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_49683"
+		Debug.AspNetCompiler.PhysicalPath = "..\TelnetTeamClient\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49683\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_49683"
+		Release.AspNetCompiler.PhysicalPath = "..\TelnetTeamClient\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49683\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "49683"
+		SlnRelativePath = "..\TelnetTeamClient\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A0676D7-13D5-41DA-B9E7-ED3BF2C52510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A0676D7-13D5-41DA-B9E7-ED3BF2C52510}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {07037E03-A206-4F93-896A-C4A58543B6D9}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 1
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://telnetteamtfs:8080/tfs/telnetteam%20project
+		SccWebProject0 = true
+		SccProjectUniqueName0 = .
+		SccProjectName0 = .
+		SccAuxPath0 = http://telnetteamtfs:8080/tfs/telnetteam%20project
+		SccLocalPath0 = .
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectEnlistmentChoice0 = 2
+	EndGlobalSection
+EndGlobal
