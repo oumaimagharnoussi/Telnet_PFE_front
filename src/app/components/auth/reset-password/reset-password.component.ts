@@ -125,11 +125,11 @@ export class ResetPasswordComponent implements OnInit {
       this.resetService.resetPassword(this.resetPasswordObj)
       .subscribe({
         next:(res)=>{
-          alert('SUCCESS')
+          this.notificationService.success('Password Reset Successfully');
 
         },
         error:(err)=>{
-          alert('ERROR');
+          this.notificationService.danger('ERROR');
           this.router.navigate(['/'])
 
 

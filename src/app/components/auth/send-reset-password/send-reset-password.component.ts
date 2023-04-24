@@ -100,12 +100,12 @@ export class SendResetPasswordComponent implements OnInit {
       this.resetService.SendResetPasswordLink(this.resetPasswordEmail)
       .subscribe({
         next:(res)=>{
-          alert("SUCCES");
+          this.notificationService.success('Send Email Successfully');
           this.resetPasswordEmail="";
 
         },
         error:(err)=>{
-          alert("ERROR");
+          this.notificationService.danger('ERROR');
 
         }
       })

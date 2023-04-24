@@ -56,3 +56,4 @@ export class ReferencesTableComponent implements OnInit, OnDestroy {
     return reference.activityId === JSON.parse(localStorage.getItem('currentUser')).activityId;
   }
 }
+

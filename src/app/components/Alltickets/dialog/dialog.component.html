@@ -1,0 +1,54 @@
+<div class="p-4">
+    <header class="d-flex justify-content-between align-items-center" >
+        <h1 mat-dialog-title>New team</h1>
+      <button mat-flat-button matDialogClose class="text-danger" style="margin-left:auto;">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+    
+
+
+        <form class="example-form" [formGroup]="productForm" >
+            <mat-card>
+            <mat-card-content>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input formControlName="libelle" matInput placeholder="Name"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Users</mat-label>
+      <mat-select formControlName="selectedUsers" multiple>
+        <!-- Add a search input -->
+        <mat-option>
+          <ngx-mat-select-search  [placeholderLabel]="'Search'"
+              [noEntriesFoundLabel]="'No options found'" (keyup)="applyFilter($event)">
+              <mat-icon ngxMatSelectSearchClear>close</mat-icon>
+          </ngx-mat-select-search>
+      </mat-option>
+        <!-- add a mat-option for selectAll -->
+        <mat-option [value]="selectAllValue" (click)="toggleSelectAll()">
+          {{ selectAllLabel }}
+        </mat-option>
+        <!-- add other mat-options for each user -->
+        <mat-option *ngFor="let user of filteredUsers" [value]="user.userId">
+          {{ user.firstName }} {{user.lastName}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    
+
+<div mat-dialog-action [align]="'end'">
+    <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+    <button style="margin-left: 8px;" mat-raised-button color="primary" (click)="addGroup()">{{actionBtn}}</button>
+</div>
+
+ </mat-card-content>
+    </mat-card>
+      </form>
+</div>     
+
+
+

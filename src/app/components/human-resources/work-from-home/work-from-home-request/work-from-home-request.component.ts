@@ -96,8 +96,8 @@ export class WorkFromHomeRequestComponent implements OnInit, OnDestroy {
       placeholder: 'criteria',
       searchPlaceholderText: 'Search...'
     };
-    this.forbiddenActivityResource = this.currentUser.groupId !== Groups.SuperAdmin && !this.currentUser.hasSubordinates;
-    if (this.isSuperAdmin() && this.currentUser.hasSubordinates === false) {
+    this.forbiddenActivityResource = this.currentUser.groupId !== Groups.SuperAdmin ;
+    if (this.isSuperAdmin() ) {
       this.onlyMySubordinates = false;
     }
     this.getActivities();

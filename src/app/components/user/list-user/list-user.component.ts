@@ -1,12 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { Groups, User } from 'app/models/shared';
-import { ApiService } from 'app/services/api.service';
-import { AddUserComponent } from '../add-user/add-user.component';
-import { UpdateUserComponent } from '../update-user/update-user.component';
-import {ViewChild} from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Groups, User } from 'app/models/shared';
+import { PopupComponent } from '../popup/popup.component';
+import * as alertify from 'alertifyjs'
+import { ApiService } from '../../../services/api.service';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder } from '@angular/forms';
+import { NotificationService } from 'app/services/shared';
+import { AuthService } from 'app/services/auth.service';
+import { UserStoreService } from 'app/services/user-store.service';
 
 
 @Component({
@@ -15,57 +20,120 @@ import { MatPaginator } from '@angular/material/paginator';
   styleUrls: ['./list-user.component.scss']
 })
 export class ListUserComponent implements OnInit {
-  users: User[];
-  group: Groups[];
+  searchTerm: string = '';
+  public users:any = [];
+  public fullName: string;
+  public userName: string;
+  public lastName: string;
+  
+  constructor(private notificationService: NotificationService,
+    @Inject(MAT_DIALOG_DATA) public data:any,
+    private builder: FormBuilder,private dialog: MatDialog, private api: ApiService,private router: Router,private route: ActivatedRoute,
+    //dash
+    private auth:AuthService, private userStore: UserStoreService
+    ) { }
+  @ViewChild(MatPaginator) _paginator!:MatPaginator;
+  @ViewChild(MatSort) _sort!:MatSort;
+  
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  constructor(private apiService:ApiService,
-    private router: Router,
-    public dialog: MatDialog) { }
-
+  finaldata:any;
+  userId: number;
+  user: User = new User();
+  
   ngOnInit(): void {
-    this.getUsers();
-   
+    console.log(this.data)
+    this.LoadUser();
+//dash
+  /* this.api.getUsers()
+    .subscribe(res=>{
+      this.users =res;
+    });
+    this.userStore.getFullNameFromStore()
+    .subscribe(val=>{
+      let fullNameFromToken = this.auth.getfullNameFromToken();
+      this.fullName = val || fullNameFromToken
+    })*/
+
+    const token = this.auth.getToken();
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    this.userName = decodedToken.name;
+    this.lastName=decodedToken.lastname;
+  }
+//dash
+  logout(){
+    this.auth.signOut();
   }
 
-  private getUsers(){
-    this.apiService.getUsers().subscribe(data=>{
-      this.users = data;
+  displayColums: string[] = ["picture", "agent", "teams","action"]
+  dataSource = new MatTableDataSource(this.data);
+
+  applyFilter(filterValue: string) {
+    filterValue = filterValue.trim(); // Remove whitespace
+    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
+    this.dataSource.filter = filterValue;
+  }
+
+  Openpopup() {
+    const dialogRef = this.dialog.open(PopupComponent,{
+      width:'500px',
+    });
+     
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+      if(result == true){
+      this.getAllUser();
+      }
     });
   }
 
-  userDetails(userId: number){
-    this.router.navigate(['user-details', userId]);
-  }
+  getAllUser(){
+    //this.router.navigate(['/users']);
+    this.api.getUsers().subscribe((res:any)=>{
+      this.data = this.mappingUsers(res.user)
+    }, error=>{
 
-  updateUser(userId: number){
-    this.openDialoga();
-  }
-
-  deleteUser(userId: number){
-    this.apiService.deleteUser(userId).subscribe( data => {
-      console.log(data);
-      this.getUsers();
     })
   }
-
-
-
-  openDialog() {
-    const dialogRef = this.dialog.open(AddUserComponent);
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+  mappingUsers(data:any[]){
+    let newUser = data.map(item=>{
+      return {
+        ...item,
+        user:item.userId.userName
+      }
+    })
+  }
+  LoadUser() {
+    this.api.getUsers().subscribe(response => {
+      this.data = response;
+      this.finaldata=new MatTableDataSource<User>(this.data);
+      this.finaldata.paginator=this._paginator;
+      this.finaldata.sort=this._sort;
     });
   }
-  openDialoga() {
-    const dialogRef = this.dialog.open(UpdateUserComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
-    });
+  EditUser(user: any) {
+    this.Openpopup();
+    console.log(this.data)
+    
+  }
+
+  
+  RemoveUser(userId: number) {
+    alert("do you want remove this user?")
+    this.notificationService.success('User deleted successfully');
+      this.api.deleteUser(userId).subscribe(r => {
+        this.LoadUser();
+      });
+  
   }
 
 
+
+  get filteredItems() {
+    return this.data.filter(item => {
+      const values = Object.values(item).join(' ').toLowerCase();
+      return values.includes(this.searchTerm.toLowerCase());
+    });
+  }
+  
 }

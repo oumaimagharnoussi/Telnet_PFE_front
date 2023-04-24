@@ -1,0 +1,59 @@
+<div class="p-4">
+    <header class="d-flex justify-content-between align-items-center" >
+     
+      <button mat-flat-button matDialogClose class="text-danger" style="margin-left:auto;">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+    
+    
+    <form class="example-form" [formGroup]="companyform" (ngSubmit)="SaveUser()">
+        <mat-card>
+        <mat-card-content>
+        
+    
+        <mat-form-field class="example-full-width" appearance="fill">
+          <mat-label>userNumber</mat-label>
+          <input matInput placeholder="userNumber" formControlName="userNumber" >
+        </mat-form-field>
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>firstName</mat-label>
+            <input matInput placeholder="firstName" formControlName="firstName" >
+          </mat-form-field>
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>lastName</mat-label>
+            <input matInput placeholder="lastName" formControlName="lastName" >
+          </mat-form-field>
+    
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>userName</mat-label>
+            <input matInput placeholder="userName" formControlName="userName" >
+          </mat-form-field>
+    
+      
+        <mat-form-field class="example-full-width" appearance="fill">
+          <mat-label>email</mat-label>
+          <input matInput placeholder="email" formControlName="email">
+        </mat-form-field>
+
+    <!-- <div>
+            <label for="selectFile" class="btn btn-primary">Select Image</label>
+            <span>{{fileName}}</span>
+            <input type="file" id="selectFile" (change)="selectImage($event)" hidden class="form-control">
+        </div> -->
+        <div>
+          <label for="selectFile" class="btn btn-primary" (click)="selectImage()">Select Image</label>
+         <!--<button (click)="selectImage($event)">Sélectionner une image</button>--> 
+          <span>{{fileName}}</span>
+          <input id="imageInput" type="file" (change)="fileChangeEvent($event)" hidden formControlName="picture">
+        </div>
+        
+    </mat-card-content>
+        <mat-card-footer>
+        <div class="example-button-row" style="margin: 2px">
+            <button mat-raised-button color="primary">Save</button> | <a (click)="closepopup()" mat-raised-button color="accent">Close</a>
+        </div>
+    </mat-card-footer>
+    </mat-card>
+      </form>
+      </div>

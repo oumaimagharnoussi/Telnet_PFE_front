@@ -50,10 +50,10 @@ export class WorkFromHomeService {
     this.entityParameterService.AddEntityParameter(entityParameters,
       'states', selectedStatusesIds, OracleDbType.Varchar2, Direction.Input);
 
-    const body = new Body();
+    /*const body = new Body();
     body.storedProcedureName = 'RHTT.GetWorkHome';
     body.entitiesParameters = new Array(entityParameters);
-    body.cursorName = 'curs';
+    body.cursorName = 'curs';*/
 
     return null;
     // return this.genericService

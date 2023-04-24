@@ -26,7 +26,7 @@ export class AuthenticationService {
     }
 
     login(userLogin: string, userPassword: string, score: number) {
-        const entityParameters = new Array<EntityParameter>();
+       /* const entityParameters = new Array<EntityParameter>();
         this.entityParameterService.AddEntityParameter(entityParameters,
             'userLogin', userLogin, OracleDbType.Varchar2, Direction.Input);
         this.entityParameterService.AddEntityParameter(entityParameters,
@@ -35,7 +35,7 @@ export class AuthenticationService {
         const body = new Body();
         body.storedProcedureName = 'SITT.GetAuthenticatedUser';
         body.entitiesParameters = new Array(entityParameters);
-        body.cursorName = 'curs';
+        body.cursorName = 'curs';*/
 
         return null;
         // return this.httpClient.post('/Login/Authenticate', JSON.stringify(body), { headers: this.headers })

@@ -1,0 +1,131 @@
+.col-sm-2 {
+    width: auto;
+  }
+  
+  .icon-pointer {
+    cursor: pointer;
+  }
+  
+  .th-firstCell-style {
+    font-weight: bolder;
+  }
+  
+  .th-table-style {
+    text-align: center;
+    font-weight: bolder;
+  }
+  
+  .td-table-style {
+    text-align: center;
+  }
+  
+  .td-title-style {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+  
+  .mat-dialog-container {
+    border-radius: 5px !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  
+  .modal_body {
+    overflow: hidden;
+  }
+  
+  .modal_header {
+    height: 50px;
+    background-color: #3f629d;
+    padding: 18px 15px;
+  
+    .modal_title {
+      color: #ffffff;
+      line-height: 1;
+    }
+  
+    .modal-close {
+      float: right;
+      cursor: pointer;
+  
+      &:hover {
+        color: red;
+      }
+    }
+  
+    .modal-close-disabled {
+      cursor: not-allowed;
+      color: gainsboro;
+  
+      &:hover {
+        color: gainsboro;
+      }
+    }
+    }
+    
+    .checkbox-halfday {
+      padding-top: 15px !important;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .textarea-container {
+      position: relative;
+      width: 100%;
+    }
+    
+    textarea {
+      width: 100%;
+      resize: horizontal;
+    }
+    
+    .expand-right {
+      width: 100%;
+      resize: horizontal;
+    }
+    
+    .textarea-container mat-icon {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      
+    }
+    
+    
+    .textarea-container textarea {
+      padding-left: 25px;
+    }
+    
+    .modal_title {
+      display: block;
+      overflow: hidden;
+  }
+  
+  .material-icons.modal-close {
+      font-size: 24px;
+      cursor: pointer;
+  }
+  
+  h1.mat-dialog-title {
+      font-size: 24px;
+      margin: 0;
+      padding: 0;
+      display: inline-block;
+  }
+  .modal_title {
+    display: block;
+    overflow: hidden;
+}
+
+
+
+h1.mat-dialog-title {
+    font-size: 24px;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
+  

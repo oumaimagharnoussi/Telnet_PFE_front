@@ -1,53 +1,96 @@
-<div class="outer">
-    
-    <div class="container">
-        
-<div class = "row">
-    
-  
-   
+<app-navbar></app-navbar>
+<main id="main" class="main">
+  <ul class="nav nav-tabs nav-tabs-bordered">
 
-<div class="panel border bg-white">
-    <div class="d-flex justify-content-end">
-        <button mat-button class="btn btn-primary" (click)="openDialog()">
-            <mat-icon>add_circle_outline</mat-icon>
-            Add User</button>
-        </div>
-    <h2 class="pt-3 font-weight-bold"> User List</h2>
-<table class = "table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th> Photo</th>
-            <th>Agents</th>
-            
-            
-            <th> Teams</th>
-            <th> Actions </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor = "let user of users" >
-            <td> {{ user.picture }} </td>
-            <td> {{ user.firstName }} {{user.lastName}}<br>
-             {{ user.email }} </td>
-            <td> {{ user.groupId }} </td>
-            <td>
-                
-                <button mat-icon-button (click) = "updateUser(user.userId)" class="btn btn-success"><mat-icon color='#16d952'>edit</mat-icon></button>
-                
-                <button mat-icon-button (click) = "deleteUser(user.userId)" style="margin-left: 10px" class = "btn btn-danger"><mat-icon color='#d91c16' >delete</mat-icon></button>
-              
-                <button mat-icon-button (click) = "userDetails(user.userId)" style="margin-left: 10px" class = "btn btn-primary"><mat-icon color='#1636d9'>patient_list</mat-icon></button>
-               
+    <li class="nav-item">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Agents</button>
+    </li>
+
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Teams</button>
+    </li>
+
+
+  </ul>
+  <div class="tab-content pt-2">
+  <div class="tab-pane fade show active profile-overview" id="profile-overview">
+
+<!--
+<mat-form-field>
+  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+</mat-form-field>
+
+    <div class="col-sm-4">
+
+      <button  type="button"
+      class="btn btn-sm btn-primary waves-light m-r-10 ripple" style="font-size:inherit;" (click)="Openpopup()">
+      <em class="icofont icofont-plus"></em> Create New
+    </button>
+
+
+       
+    </div>
+
+    
+      <div class="mat-elevation-z8">
+      <div style="margin-top: 10px;">
+
+    <table mat-table [dataSource]="finaldata" matSort class="mat-elevation-z8">
+     
+        <ng-container matColumnDef="picture">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Picture</th>
+        <td mat-cell *matCellDef="let user">{{user.picture}}-->
+         <!--<td mat-cell *matCellDef="let user;let index=index"></td>-->
+          
+        <!--  <img [src]="'https://localhost:7250/api/User/' + user.picture" alt="">
+        </td> 
+        </ng-container>
+
+        <ng-container matColumnDef="agent">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Agent</th>
+            <td mat-cell *matCellDef="let user">{{ user.firstName }} {{user.lastName}}<br>
+                {{ user.email }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="teams">
+            <th mat-header-cell *matHeaderCellDef>Teams</th>-->
+            <!--<td mat-cell *matCellDef="let user">{{user.groupId}}</td>-->
+          <!--  <td mat-cell *matCellDef="let user">{{ getGroupName(user.groupId) }}</td>
+          </ng-container>
+
+          
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef> Action</th>
+            <td mat-cell *matCellDef="let user">
+                <div>
+                    <a mat-icon-button (click)="EditUser(user)" color="primary"><mat-icon>edit</mat-icon></a> |
+                    <a mat-icon-button (click)="RemoveUser(user.userId)" color="warn"><mat-icon>delete_outline</mat-icon></a>
+                </div>
             </td>
-        </tr>
-    </tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<mat-paginator [length]="100"
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]">
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayColums"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayColums;"></tr>
+
+    </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100, 200]"
+  showFirstLastButtons 
+  aria-label="Select page of periodic users">
 </mat-paginator>
+</div>
+
+</div>
+
+-->
+
+<app-agent></app-agent>
+
+</div>
+
+<div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+  <app-tickets></app-tickets>
+</div>
+</div>
+</main>

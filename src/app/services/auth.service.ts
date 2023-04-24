@@ -2,14 +2,16 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http"
 import { Router } from '@angular/router';
 import {JwtHelperService} from '@auth0/angular-jwt'
- 
+import { CookieService } from 'ngx-cookie-service';
+import { User } from 'app/models/shared';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  user:User;
   private baseUrl:string = "https://localhost:7250/api/User/"
   private userPayload:any;
-  constructor(private http : HttpClient, private router: Router) { 
+  constructor(private http : HttpClient, private router: Router,  private cookieService: CookieService,) { 
     this.userPayload = this.decodedToken();
   }
 
@@ -33,7 +35,10 @@ export class AuthService {
   }
 
   signOut(){
+    delete this.user;
+
     localStorage.clear();
+    localStorage.removeItem('token');
     this.router.navigate(['login'])
   }
 
@@ -54,5 +59,15 @@ export class AuthService {
     if(this.userPayload)
     return this.userPayload.role;
   }
+ /* logout() {
+    this.cookieService.delete('userLogin');
+    this.cookieService.delete('passwordStrength');
+    this.resetProfile();
+}*/
+resetProfile() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('expires_in');
 
+  sessionStorage.clear();
+}
 }

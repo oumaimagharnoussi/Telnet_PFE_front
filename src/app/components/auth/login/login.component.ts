@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
     private cookieService: CookieService,
     private fb: FormBuilder,
     private auth: AuthService,
+    private notificationService: NotificationService,
 
    
     //private toast: NgToastService,
@@ -62,7 +63,13 @@ export class LoginComponent implements OnInit {
       userNumber: ['',Validators.required],
       userPassword: ['',Validators.required]
 
-    })
+    }),
+
+    document.querySelector('body').setAttribute('themebg-pattern', 'theme1');
+
+    this.authenticationService.logout();
+
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || 'dashboard';
   }
 
   /*ngOnInit() {
@@ -101,7 +108,7 @@ export class LoginComponent implements OnInit {
         });
   }*/
 
-  /*login() {
+ /*Ologin() {
     this.isLoading = true;
     const score = PasswordStrengthBarComponent.measureStrength(this.userPassword);
     this.authenticationService.login(this.userLogin, this.userPassword, score)
@@ -133,24 +140,24 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.loginForm.value)
       .subscribe({
         next:(res)=>{
-          alert(res.message)
           this.loginForm.reset();
           this.auth.storeToken(res.token);
           const tokenPayload = this.auth.decodedToken();
           this.userStore.setFullNameFromStore(tokenPayload.name);
           this.userStore.setRoleForStore(tokenPayload.role);
-   
-          this.router.navigate(['/dashboard']);
+          this.notificationService.success('Login SUCCES');
+          this.router.navigate(['ticket']);
         },
         error:(err)=>{
           
-          alert("ERROR");
+          this.notificationService.danger('ERROR');
+          
         }
       })
     }else{
       
       ValidateForm.validateAllFormFileds(this.loginForm)
-      alert("Your form is invalid")
+      this.failedLogin = true;
     }
   }
 

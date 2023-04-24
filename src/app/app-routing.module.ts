@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AdminComponent } from './layout/admin/admin.component';
 import { AuthComponent } from './layout/auth/auth.component';
@@ -7,10 +7,24 @@ import { ResetPasswordComponent } from './components/auth/reset-password/reset-p
 import { DefaultComponent } from './components/dashboard/default/default.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { ChangePasswordComponent } from './components/auth/change-password/change-password.component';
-import { ProfileComponent } from './components/user/profile/profile.component';
+
 import { ListUserComponent } from './components/user/list-user/list-user.component';
-import { AddUserComponent } from './components/user/add-user/add-user.component';
-import { UpdateUserComponent } from './components/user/update-user/update-user.component';
+import { ProfileComponent } from './components/user/profile/profile.component';
+import { WorkFromHomeRequestTableComponent } from './components/human-resources/work-from-home/work-from-home-request/work-from-home-request-table/work-from-home-request-table.component';
+import { TicketComponent } from './components/ticket/ticket.component';
+
+import { Projet1Component } from './components/test/projet1/projet1.component';
+import { EditComponent } from './components/test/edit/edit.component';
+import { TicketsComponent } from './components/Alltickets/dialog/tickets/tickets.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { AgentComponent } from './components/agent/agent.component';
+import { DetailComponent } from './components/agent/detail/detail.component';
+
+
+
+
+
+
 
 
 
@@ -20,9 +34,22 @@ const routes: Routes = [
   {path:'reset', component: ResetPasswordComponent},
   {path:'change', component: ChangePasswordComponent},
   {path:'profile', component: ProfileComponent},
-  {path: 'users', component: ListUserComponent},
-  {path:'add-user', component:AddUserComponent},
-  {path:'update-user', component:UpdateUserComponent},
+  {path:'nav', component: NavbarComponent},
+  {path: 'users', component: ListUserComponent,canActivate:[AuthGuard]},
+  { canActivate: [AuthGuard],path:'ticket',component:TicketComponent},
+  {path: 'user-details/:userId', component: DetailComponent},
+
+
+
+
+  {path:'agent',component:AgentComponent},
+  
+  //test
+  {path:'pro',component:Projet1Component},
+  {path:'edit',component:EditComponent},
+  {path:'newticket',component:TicketsComponent},
+  //end test
+  
   {
     //canActivate: [AuthGuard],
     path: 'from-home',
@@ -50,7 +77,7 @@ const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
-    //canActivate: [AuthGuard],
+   // canActivate: [AuthGuard],
     children: [
       {
         path: 'dashboard',

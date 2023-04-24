@@ -37,10 +37,10 @@ export class WorkFromHomeRequestTableComponent implements OnInit, OnDestroy {
     private dateTimeService: DateTimeService) { }
 
   ngOnInit() {
-    this.forbiddenRejectValidate = this.currentUser.groupId !== Groups.SuperAdmin && !this.currentUser.hasSubordinates;
-    if (this.workFromHomeRequests.length !== 0) {
+    //this.forbiddenRejectValidate = this.currentUser.groupId !== Groups.SuperAdmin && !this.currentUser.hasSubordinates;
+    //if (this.workFromHomeRequests.length !== 0) {
       this.listView = true;
-    }
+   // }
     this.selectedWorkHomeRequestId = 0;
     this.dataSource = new MatTableDataSource(this.workFromHomeRequests);
     this.subscription = this.searchFilterService.resultChanged

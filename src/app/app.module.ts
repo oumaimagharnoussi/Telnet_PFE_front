@@ -45,17 +45,24 @@ import { ListUserComponent } from './components/user/list-user/list-user.compone
 import {MatIconModule} from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { AddUserComponent } from './components/user/add-user/add-user.component';
-import { UpdateUserComponent } from './components/user/update-user/update-user.component';
-
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
+import { PopupComponent } from './components/user/popup/popup.component';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { TicketComponent } from './components/ticket/ticket.component';
+import { AddTicketComponent } from './components/ticket/add-ticket/add-ticket.component';
 
+import { Projet1Component } from './components/test/projet1/projet1.component';
+import { EditComponent } from './components/test/edit/edit.component';
 
-
-
-
-
-
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { TicketsComponent } from './components/Alltickets/dialog/tickets/tickets.component';
+import { DialogComponent } from './components/Alltickets/dialog/dialog.component';
+import { AgentComponent } from './components/agent/agent.component';
+import { DialogagentComponent } from './components/agent/dialogagent/dialogagent.component';
+import { DetailComponent } from './components/agent/detail/detail.component';
+import {QRCodeModule} from 'angular2-qrcode'
+import { AngularEditorModule } from '@kolkov/angular-editor';
 export const CUSTOM_DT_FORMATS = {
   parse: {
     dateInput: 'L',
@@ -77,8 +84,19 @@ export const CUSTOM_DT_FORMATS = {
     ExpirationSessionComponent,
     ProfileComponent,
     ListUserComponent,
-    AddUserComponent,
-    UpdateUserComponent
+    PopupComponent,
+    TicketComponent,
+    AddTicketComponent,
+    Projet1Component,
+    EditComponent,
+    TicketsComponent,
+    DialogComponent,
+    NavbarComponent,
+    AgentComponent,
+    DialogagentComponent,
+    DetailComponent,
+   
+    
   ],
   imports: [
     CommonModule,
@@ -107,6 +125,11 @@ export const CUSTOM_DT_FORMATS = {
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
+    MatTableModule,
+    MatSortModule,
+   QRCodeModule,
+   AngularEditorModule
+   
  
   ],
   entryComponents: [

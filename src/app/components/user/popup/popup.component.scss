@@ -1,0 +1,30 @@
+.mat-form-field{
+    width: 100%;
+}
+h1 {
+  font-weight: bold;
+}
+
+textarea {
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 130px;
+  max-height: 130px;
+}
+
+
+.example-container > * {
+  width: 100%;
+}
+.example-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.example-container > * {
+  width: 750%;
+}
+.btn{
+  margin-top: 20px;
+  border-radius: 15px;
+}

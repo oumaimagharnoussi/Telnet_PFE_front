@@ -73,3 +73,22 @@ export enum Roles {
     SQA = 22,
     Developper = 24
 }
+//j'ai ajouter ce eum
+export enum Priorite
+    {
+        Urgent,
+        Hight,
+        Medium,
+        Low
+    }
+
+export enum Type {
+    Assistance_diverse,
+    impression_locale,
+    impression_reseau,
+    Droit_d_acces_initial,
+    Droit_d_acces_changement,
+    Droit_d_acces_revue
+  }    
+
+ 
