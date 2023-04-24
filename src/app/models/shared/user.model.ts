@@ -15,3 +15,5 @@ export class User {
   hasSubordinates: boolean;
   picture: string = null;
 }
+
+

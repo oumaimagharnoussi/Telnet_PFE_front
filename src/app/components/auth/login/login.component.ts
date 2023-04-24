@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AuthenticationService } from 'app/services/shared';
+import { AuthenticationService, NotificationService } from 'app/services/shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { environment } from 'environments/environment';
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   errorMessages: string;
 
   recaptchaSended = false;
-
+  
 
   type: string = "password";
   isText: boolean = false;
@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
     private cookieService: CookieService,
     private fb: FormBuilder,
     private auth: AuthService,
+
    
     //private toast: NgToastService,
     private userStore: UserStoreService
@@ -138,7 +139,7 @@ export class LoginComponent implements OnInit {
           const tokenPayload = this.auth.decodedToken();
           this.userStore.setFullNameFromStore(tokenPayload.name);
           this.userStore.setRoleForStore(tokenPayload.role);
-          //alert("SUCCES");
+   
           this.router.navigate(['/dashboard']);
         },
         error:(err)=>{

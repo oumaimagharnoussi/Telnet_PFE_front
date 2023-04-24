@@ -1,0 +1,66 @@
+<div class="p-4">
+    <header class="d-flex justify-content-between align-items-center" >
+        <h1 class="m-0">Update User</h1>
+        <button mat-flat-button matDialogClose class="text-danger">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+      <form (ngSubmit)="onSubmit()">
+
+        <div class="example-container">
+
+        <mat-form-field class="form-group">
+           
+            <input matInput placeholder="User Number" type="text" class="form-control" id="userNumber" [(ngModel)]="user.userNumber"
+                name="userNumber">
+        </mat-form-field>
+
+        <mat-form-field class="form-group">
+           
+            <input matInput placeholder="First Name" type="text" class="form-control" id="firstName" [(ngModel)]="user.firstName"
+                name="firstName">
+        </mat-form-field>
+
+        <mat-form-field class="form-group">
+           
+            <input matInput placeholder="Last Name" type="text" class="form-control" id="lastName" [(ngModel)]="user.lastName"
+                name="lastName">
+        </mat-form-field>
+       
+        <mat-form-field class="form-group">
+           
+            <input matInput placeholder="User Name" type="text" class="form-control" id="userName" [(ngModel)]="user.userName"
+                name="userName">
+        </mat-form-field>
+        <mat-form-field class="form-group">
+            
+            <input matInput placeholder="Email" type="text" class="form-control" id="email" [(ngModel)]="user.email"
+                name="email">
+        </mat-form-field>
+       <!-- <div class="form-group">
+            <label>Qualification</label>
+            <input type="text" class="form-control" id="qualification" [(ngModel)]="user.qualification"
+                name="qualification">
+        </div>-->
+
+        
+        <mat-form-field class="form-group">
+            <input matInput type="number" placeholder="Qualification"  class="form-control" id="qualification" [(ngModel)]="user.qualification"
+            name="qualification">
+           
+          </mat-form-field>
+</div>
+
+       <!-- <label for="group">Teams</label>
+
+<select name="group" id="group">
+   <option  *ngFor="let group of group"  value="{{group}}" ></option>
+</select>
+-->
+        <br />
+        <button class="btn btn-primary btn-block mt-4 w-100"  type="submit">Save</button>
+
+    </form>
+
+    
+</div>

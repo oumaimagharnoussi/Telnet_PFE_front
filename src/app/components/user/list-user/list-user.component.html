@@ -1,0 +1,53 @@
+<div class="outer">
+    
+    <div class="container">
+        
+<div class = "row">
+    
+  
+   
+
+<div class="panel border bg-white">
+    <div class="d-flex justify-content-end">
+        <button mat-button class="btn btn-primary" (click)="openDialog()">
+            <mat-icon>add_circle_outline</mat-icon>
+            Add User</button>
+        </div>
+    <h2 class="pt-3 font-weight-bold"> User List</h2>
+<table class = "table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th> Photo</th>
+            <th>Agents</th>
+            
+            
+            <th> Teams</th>
+            <th> Actions </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor = "let user of users" >
+            <td> {{ user.picture }} </td>
+            <td> {{ user.firstName }} {{user.lastName}}<br>
+             {{ user.email }} </td>
+            <td> {{ user.groupId }} </td>
+            <td>
+                
+                <button mat-icon-button (click) = "updateUser(user.userId)" class="btn btn-success"><mat-icon color='#16d952'>edit</mat-icon></button>
+                
+                <button mat-icon-button (click) = "deleteUser(user.userId)" style="margin-left: 10px" class = "btn btn-danger"><mat-icon color='#d91c16' >delete</mat-icon></button>
+              
+                <button mat-icon-button (click) = "userDetails(user.userId)" style="margin-left: 10px" class = "btn btn-primary"><mat-icon color='#1636d9'>patient_list</mat-icon></button>
+               
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<mat-paginator [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]">
+</mat-paginator>

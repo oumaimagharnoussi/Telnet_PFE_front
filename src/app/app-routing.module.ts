@@ -7,6 +7,10 @@ import { ResetPasswordComponent } from './components/auth/reset-password/reset-p
 import { DefaultComponent } from './components/dashboard/default/default.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { ChangePasswordComponent } from './components/auth/change-password/change-password.component';
+import { ProfileComponent } from './components/user/profile/profile.component';
+import { ListUserComponent } from './components/user/list-user/list-user.component';
+import { AddUserComponent } from './components/user/add-user/add-user.component';
+import { UpdateUserComponent } from './components/user/update-user/update-user.component';
 
 
 
@@ -15,6 +19,10 @@ const routes: Routes = [
   {path:'login', component: LoginComponent},
   {path:'reset', component: ResetPasswordComponent},
   {path:'change', component: ChangePasswordComponent},
+  {path:'profile', component: ProfileComponent},
+  {path: 'users', component: ListUserComponent},
+  {path:'add-user', component:AddUserComponent},
+  {path:'update-user', component:UpdateUserComponent},
   {
     //canActivate: [AuthGuard],
     path: 'from-home',

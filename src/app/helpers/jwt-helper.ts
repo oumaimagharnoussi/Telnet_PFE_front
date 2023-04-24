@@ -118,7 +118,7 @@ export class JwtHelper {
     }
 
     // Token expired?
-    return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 1000)));
+    return !(date.valueOf() > (new Date().valueOf() + (offsetSeconds * 100000)));
   }
 
   public getTokenUserId(token?: string): string {

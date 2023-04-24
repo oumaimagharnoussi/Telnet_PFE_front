@@ -40,6 +40,19 @@ import {
   FileService, GroupsService, AuthenticationService, CoreDataService, MailService, SortService
 } from './services/shared';
 import { NumberFormatter } from './helpers';
+import { ProfileComponent } from './components/user/profile/profile.component';
+import { ListUserComponent } from './components/user/list-user/list-user.component';
+import {MatIconModule} from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { AddUserComponent } from './components/user/add-user/add-user.component';
+import { UpdateUserComponent } from './components/user/update-user/update-user.component';
+
+import {MatPaginatorModule} from '@angular/material/paginator';
+
+
+
+
 
 
 
@@ -61,7 +74,11 @@ export const CUSTOM_DT_FORMATS = {
     AdminComponent,
     AuthComponent,
     BreadcrumbsComponent,
-    ExpirationSessionComponent
+    ExpirationSessionComponent,
+    ProfileComponent,
+    ListUserComponent,
+    AddUserComponent,
+    UpdateUserComponent
   ],
   imports: [
     CommonModule,
@@ -85,8 +102,12 @@ export const CUSTOM_DT_FORMATS = {
     LockScreenModule,
     AuthModule,
     MatButtonModule,
-    BotDetectCaptchaModule
-    
+    BotDetectCaptchaModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatPaginatorModule,
+ 
   ],
   entryComponents: [
     AdminComponent,
