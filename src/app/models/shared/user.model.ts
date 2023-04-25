@@ -17,7 +17,8 @@ export class User {
   hierarchicalHead2: number;
   hasSubordinates: boolean;
   picture: string = null;
-  //userPassword:string;
+ 
+  userPassword:string;
  
 }
 

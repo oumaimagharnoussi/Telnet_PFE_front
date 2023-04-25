@@ -10,6 +10,7 @@ import { Groups, User } from 'app/models/shared';
 import { ActivitieService } from 'app/services/activitie.service';
 import { ApiService } from 'app/services/api.service';
 import { AuthService } from 'app/services/auth.service';
+import { ChangepasswordService } from 'app/services/changepassword.service';
 import { GroupService } from 'app/services/group.service';
 import { NotificationService } from 'app/services/shared';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
@@ -26,6 +27,7 @@ export class ProfileComponent implements OnInit {
   selectedGroup: Groupe;
   selectedActivitie: Activitie;
   passwordForm: FormGroup;
+  errorMessage: string;
 User : User;
 user: User = new User();
 public userName: string;
@@ -47,7 +49,9 @@ currentUser: any;
   private router: Router,
   private renderer: Renderer2,
   private authservice:AuthService,private api:GroupService,
-  private act:ActivitieService) {}
+  private act:ActivitieService,
+  private servicepass:ChangepasswordService
+  ) {}
 
   ngOnInit(): void {
    
@@ -64,7 +68,7 @@ currentUser: any;
       currentPassword: ['', Validators.required],
       newPassword: ['', Validators.required],
       confirmPassword: ['', Validators.required]
-    }, { validator: this.passwordMatchValidator });
+    }, { validator: this.matchingPasswords('newPassword', 'confirmPassword') });
 
 
     const token = this.authservice.getToken();
@@ -133,7 +137,8 @@ currentUser: any;
         functionsId: [],
         hierarchicalHead1: 0,
         hierarchicalHead2: 0,
-        hasSubordinates: false
+        hasSubordinates: false,
+        userPassword: ''
       };
     
       // Call the updateUser method with the updated user data
@@ -228,33 +233,42 @@ if (profilePicture) {
         };
       }
     }*/
+    matchingPasswords(passwordKey: string, confirmPasswordKey: string) {
+      return (group: FormGroup): {[key: string]: any} => {
+        const password = group.controls[passwordKey];
+        const confirmPassword = group.controls[confirmPasswordKey];
+  
+        if (password.value !== confirmPassword.value) {
+          return {
+            mismatchedPasswords: true
+          };
+        }
+      }
+    }
+
+
+
     changePassword(): void {
       if (this.passwordForm.invalid) {
-        this.notificationService.danger("Please fill in all the fields.");
+        this.errorMessage = "Please fill in all the fields.";
         return;
       }
   
-      const currentPassword = this.passwordForm.controls.currentPassword.value;
-      const newPassword = this.passwordForm.controls.newPassword.value;
+      const currentPassword = this.passwordForm.get('currentPassword').value;
+      const newPassword = this.passwordForm.get('newPassword').value;
   
-      this.auth.changePassword(this.userId, currentPassword, newPassword)
+      this.servicepass.changePassword(this.userId, currentPassword, newPassword)
         .subscribe(() => {
-          this.notificationService.success("Password changed successfully!");
+          this.errorMessage = '';
           this.passwordForm.reset();
+          this.notificationService.success("Password changed successfully!");
         }, error => {
-          this.notificationService.danger("error");
+          this.errorMessage = error.message;
         });
     }
-    passwordMatchValidator(form: FormGroup) {
-      const newPasswordControl = form.controls.newPassword;
-      const confirmPasswordControl = form.controls.confirmPassword;
-  
-      if (newPasswordControl.value !== confirmPasswordControl.value) {
-        confirmPasswordControl.setErrors({ mismatch: true });
-      } else {
-        confirmPasswordControl.setErrors(null);
-      }
-    }  
+    
+    
+    
     
 deleteProfilePicture(): void {
   // Supprimer la photo de profil de l'utilisateur
