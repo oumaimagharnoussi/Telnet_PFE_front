@@ -23,7 +23,7 @@
         <!-- Add a search input -->
         <mat-option>
           <ngx-mat-select-search  [placeholderLabel]="'Search'"
-              [noEntriesFoundLabel]="'No options found'" (keyup)="applyFilter($event)">
+              [noEntriesFoundLabel]="'No options found'" type="search" (keyup)="applyFilter($event)">
               <mat-icon ngxMatSelectSearchClear>close</mat-icon>
           </ngx-mat-select-search>
       </mat-option>

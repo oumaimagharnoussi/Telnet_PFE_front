@@ -1,14 +1,18 @@
 import { Component, Inject, OnInit,  ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, NgForm } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Groupe } from 'app/models/groupe.model';
 import { GroupService } from 'app/services/group.service';
 import { HalfDay, WorkFromHomeRequest } from 'app/models/human-resources/work-from-home';
-import { Identifier, Priorite, Type } from 'app/models/shared';
+import { Identifier, Priorite, Type, User } from 'app/models/shared';
 import { WorkFromHomeService } from 'app/services/human-resources/work-from-home';
 import { DateTimeService, MailService, NotificationService } from 'app/services/shared';
 import { ReplaySubject } from 'rxjs';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
+import { AuthService } from 'app/services/auth.service';
+import { ApiService } from 'app/services/api.service';
+import { TicketService } from 'app/services/ticket.service';
+import { Ticket } from 'app/models/ticket.model';
 @Component({
   selector: 'app-add-ticket',
   templateUrl: './add-ticket.component.html',
@@ -72,23 +76,33 @@ export class AddTicketComponent implements OnInit {
     ]*/
    
   };
+  filteredUsers: {userId: number, firstName: string, lastName: string}[] = [];
+  selectedGroup: Groupe;
+  userSearch = new FormControl('');
+  user:User[];
+  userId:number;
+  userGroup: string;
+  public lastName: string;
+  public firstName:string;
+  public startDate:Date;
+  public endDate: Date;
   groupId: number;
   groups: Groupe[];
-  initialWorkFromHomeRequest: WorkFromHomeRequest = new WorkFromHomeRequest();
-  //@ViewChild('workFromHomeRequestForm', { static: true }) workFromHomeRequestForm: NgForm;
-  public filteredResources: ReplaySubject<Identifier[]> = new ReplaySubject<Identifier[]>(1);
-  public resourceFilterCtrl: FormControl = new FormControl();
+  selectAllValue = 'selectAll';
+  selectAllChecked = false;
+  productForm: FormGroup;
+  selectAllLabel = 'Select All';
+  
   public isHalfDayChecked: boolean;
   workFromHomeRequest: WorkFromHomeRequest;
   dateTimeService: DateTimeService;
   isEdit = false;
   halefDayItems = Object.values(HalfDay).map(key => HalfDay[key]);
   selectedHalefDayItem: HalfDay = this.halefDayItems[0];
-  errorMessage: string;
-  resourcesIdentifiers: Identifier[];
-  workFromHomeRequestId: number;
-
- 
+  
+  actionBtn:string="Save";
+  supportGroupId: number;
+  ticket:Ticket;
   
 URGENT_ICON_NAME = 'urgent.png';
 URGENT_ICON_hight='Hight.png';
@@ -96,18 +110,97 @@ URGENT_ICON_Medium='Medium.png';
 URGENT_ICON_low='low.png'
 
   workFromHomeRequestForm:FormGroup;
+  supportUsers: any;
   constructor(private formBuilder: FormBuilder, private mailService: MailService,
     private notificationService: NotificationService,private workFromHomeService: WorkFromHomeService,private dialogRef: MatDialogRef<AddTicketComponent>,
-    @Inject(MAT_DIALOG_DATA) private data,private api:GroupService) { }
+    @Inject(MAT_DIALOG_DATA) public editData:any,private api:GroupService, private authservice:AuthService,private apiuser: ApiService,public dialog: MatDialogRef<AddTicketComponent>,public apiTicket:TicketService) { }
 
-  ngOnInit(): void {
-    this.api.getGroupes().subscribe((data: Groupe[]) => {
-      this.groups = data;
-    });
-   this.workFromHomeRequestForm=this.formBuilder.group({
-    
-   }) 
+    ngOnInit(): void {
+      this.api.getGroupes().subscribe((data: Groupe[]) => {
+        this.groups = data;
+        const supportGroup = data.find(group => group.libelle === 'Support');
+        if (supportGroup) {
+          this.supportGroupId = supportGroup.groupId;
+          this.getUsersByGroupId(this.supportGroupId);
+        }
+      });
+  
+      const token = this.authservice.getToken();
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      this.firstName = decodedToken.firstname;
+      this.lastName = decodedToken.lastname;
+      this.groupId = decodedToken.Groups;
+     
+      this.userId = decodedToken.userId;
+      const userGroupId = decodedToken.Groups;
+      this.getGroupById(userGroupId);
+  
+      this.apiuser.getUsers().subscribe(res => {
+        this.user = res;
+        this.filteredUsers = res;
+      });
+      this.userSearch.valueChanges.subscribe(searchValue => {
+        this.filteredUsers = this.user.filter(user => {
+          const fullName = user.firstName + ' ' + user.lastName;
+          return fullName.toLowerCase().includes(searchValue.toLowerCase());
+        });
+      });
+
+
+
+      this.productForm = this.formBuilder.group({
+       // PrisEnChargePar:['', Validators.required],
+       userId:[this.userId, Validators.required],
+
+        startDate : ['', Validators.required],
+        endDate : ['', Validators.required],
+        priorite : ['', Validators.required],
+        type : ['', Validators.required],
+        Description : ['', Validators.required],
+       /* halfDay: ['', Validators.required],
+       
+       
+        id:['', Validators.required],
+        dayNumber:['', Validators.required],
+        file:['', Validators.required],
+        commentaire:['', Validators.required]*/
+      });
+      
+     /* if (this.editData) {
+        this.actionBtn = "Update";
+        this.productForm.patchValue({
+          priorite: this.editData.priorite,
+          type: this.editData.type,
+          startDate: this.editData.startDate,
+          endDate: this.editData.endDate,
+          description: this.editData.description,
+          halfDay: this.editData.halfDay,
+          userId: this.editData.userId,
+          PrisEnChargePar: this.editData.PrisEnChargePar,
+          id: this.editData.id,
+          dayNumber: this.editData.dayNumber,
+          file: this.editData.file,
+          commentaire: this.editData.commentaire
+        });
+      }*/
+    }
+  
+    getUsersByGroupId(groupId: number) {
+      this.apiuser.getUsers().subscribe(res => {
+        this.user = res.filter(user => user.groupId === groupId);
+        this.filteredUsers = this.user;
+      });
+    }
+  
+  
+
+ 
+  
+  getGroupById(groupId: number) {
+    this.api.getGroupeById(groupId)
+      .subscribe(group => this.selectedGroup = group);
   }
+
   close() {
     this.dialogRef.close();
   }
@@ -126,144 +219,31 @@ URGENT_ICON_low='low.png'
   }
   onChangingDate() {
     if (this.isHalfDayChecked) {
-      this.workFromHomeRequest.endDate = this.workFromHomeRequest.startDate;
+      this.ticket.endDate = this.ticket.startDate;
     } else {
-      if (!this.workFromHomeRequest.endDate || this.workFromHomeRequest.startDate > this.workFromHomeRequest.endDate) {
-        this.workFromHomeRequest.endDate = this.workFromHomeRequest.startDate;
+      if (!this.ticket.endDate || this.ticket.startDate > this.ticket.endDate) {
+        this.ticket.endDate = this.ticket.startDate;
       }
     }
   }
 
 
-  formControl() {
-    this.errorMessage = '';
-    let isValid = true;
-    if (this.workFromHomeRequest.startDate > this.workFromHomeRequest.endDate) {
-      this.errorMessage = 'End Date must be greater than Start Date.';
-      isValid = false;
-    }
-    if (this.isHalfDayChecked && (this.workFromHomeRequest.halfDay === '' || this.workFromHomeRequest.halfDay === null)) {
-      this.errorMessage = 'Day Time is required';
-      isValid = false;
-    }
-    return isValid;
-  }
+ 
   calculateBetweenDates() {
     let dayNumber = 0;
     if (this.isHalfDayChecked) {
       dayNumber = 0.5;
     } else {
-      const date1 = new Date(this.workFromHomeRequest.startDate);
-      const date2 = new Date(this.workFromHomeRequest.endDate);
+      const date1 = new Date(this.ticket.startDate);
+      const date2 = new Date(this.ticket.endDate);
       const Difference_In_Time = date2.getTime() - date1.getTime();
       dayNumber = Difference_In_Time / (1000 * 3600 * 24) + 1;
     }
     console.log(dayNumber);
     return dayNumber;
   }
-  prepareWorkFromHomeRequest(workFromHomeRequest: WorkFromHomeRequest) {
-    if (workFromHomeRequest.workHomeRequestId === 0) {
-      workFromHomeRequest.state = 1;
-    }
-    workFromHomeRequest.motive = '';
-    workFromHomeRequest.userFullName = this.resourcesIdentifiers.find(resource =>
-      resource.id === workFromHomeRequest.userId).description;
-    workFromHomeRequest.dayNumber = this.calculateBetweenDates();
-  }
-  notifications() {
-    if (this.isEdit) {
-      const workFromHomeRequestModification = this.checkModification(this.initialWorkFromHomeRequest
-        , this.workFromHomeRequest);
-      if (workFromHomeRequestModification) {
-        this.notificationService.success('This Work From Home Request is modified successfully');
-        this.mailService.workFromHomeRequestModified(this.workFromHomeRequest,
-          this.initialWorkFromHomeRequest);
-      }
-    } else {
-      this.notificationService.success('This Work From Home Request is added successfully');
-      this.mailService.workFromHomeRequestAdded(this.workFromHomeRequest);
-    }
-
-  }
-
-  save() {
-    if (this.workFromHomeRequestForm.valid) {
-      if (this.formControl()) {
-
-        this.prepareWorkFromHomeRequest(this.workFromHomeRequest);
-        this.workFromHomeService.IsDateExistOrInProgressWorkHome(this.workFromHomeRequest.workHomeRequestId
-          , this.workFromHomeRequest.userId, this.workFromHomeRequest.startDate, this.workFromHomeRequest.endDate).subscribe(
-            data => {
-              switch (data) {
-                case 0: {
-                  this.workFromHomeService.insertOrUpdateWorkFromHomeRequest(this.workFromHomeRequest).subscribe(
-                    () => {
-                      this.notifications();
-                      this.close();
-                      this.workFromHomeService.refreshWorkFomHomeRequest.next();
-                    }
-                  );
-                  break;
-                }
-                case 1: {
-                  this.close();
-                  this.workFromHomeService.refreshWorkFomHomeRequest.next();
-                  this.notificationService.danger('This Work From Home Request does not yet exist or not in progress');
-                  break;
-                }
-                case 2: {
-                  this.notificationService.danger('This person has a work from home request at this date.');
-                  break;
-                }
-              }
-            }
-          );
-
-      } else {
-        this.notificationService.danger(this.errorMessage);
-      }
-    } else {
-      this.notificationService.danger('Please fill all required fields');
-    }
-  }
-
-  checkModification(oldWorkFromHomeRequest: WorkFromHomeRequest, newWorkFromHomeRequest: WorkFromHomeRequest): boolean {
-    let modification = false;
-    if ((oldWorkFromHomeRequest.startDate !== newWorkFromHomeRequest.startDate)
-      || (oldWorkFromHomeRequest.endDate !== newWorkFromHomeRequest.endDate)
-      || (oldWorkFromHomeRequest.halfDay !== newWorkFromHomeRequest.halfDay)
-      || (oldWorkFromHomeRequest.dayNumber !== newWorkFromHomeRequest.dayNumber)) {
-      modification = true;
-    }
-    return modification;
-  }
-
-  getWorkFromHomeRequestInProgress() {
-    if (this.workFromHomeRequestId) {
-      this.workFromHomeService.getWorkHomeRequestInProgress(this.workFromHomeRequestId)
-        .subscribe(
-          data => {
-            if (data.length !== 0) {
-              this.workFromHomeRequest = Object.assign(new WorkFromHomeRequest, data[0]);
-              this.workFromHomeRequest.startDate = new Date(this.workFromHomeRequest.startDate);
-              this.workFromHomeRequest.endDate = new Date(this.workFromHomeRequest.endDate);
-              this.initialWorkFromHomeRequest = Object.assign(new WorkFromHomeRequest, data[0]);
-              this.initialWorkFromHomeRequest.startDate = new Date(this.initialWorkFromHomeRequest.startDate);
-              this.initialWorkFromHomeRequest.endDate = new Date(this.initialWorkFromHomeRequest.endDate);
-              if (this.workFromHomeRequest.halfDay !== null) {
-                this.isHalfDayChecked = true;
-              }
-            } else {
-              this.close();
-              this.workFromHomeService.refreshWorkFomHomeRequest.next();
-              this.notificationService.danger('This Work From Home Request does not yet exist or not in progress');
-            }
-          }
-        );
-    }
-
-  }
-
+ 
+  
   priorites = [
     { value: Priorite.Urgent, label: 'Urgent', icon: this.URGENT_ICON_NAME },
    // { value: Priorite.Hight, label: 'Hight', icon: this.URGENT_ICON_hight },
@@ -279,11 +259,84 @@ URGENT_ICON_low='low.png'
     { value: Type.Droit_d_acces_revue, label: 'Droit dacces revue' }
   ];
 
-  applyFilter(event: KeyboardEvent) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.data.filter = filterValue.trim().toLowerCase();
-}
+  /*applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+
+    // Filtrage des groupes
+    const filteredGroups = this.groups.filter((group: Groupe) =>
+        group.libelle.toLowerCase().includes(filterValue)
+    );
+
+    // Remplacement de la liste des groupes
+    this.groups = filteredGroups;
+}*/
+
+
 onFileSelected(event) {
   this.selectedFile = event.target.files[0];
+}
+
+isChecked(userId: number): boolean {
+  return this.productForm.value.selectedUsers.includes(userId);
+}
+
+toggleSelectAll(): void {
+  if (this.selectAllChecked) {
+    // uncheck all checkboxes
+    this.productForm.patchValue({ selectedUsers: [] });
+  } else {
+    // check all checkboxes
+    const allUserIds = this.user.map(user => user.userId);
+    this.productForm.patchValue({ selectedUsers: allUserIds });
+  }
+  this.selectAllChecked = !this.selectAllChecked;
+}
+
+applyFilter(event: Event) {
+  const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+
+  // Filter users by first and last name
+  const filteredUsers = this.user.filter((user: { userId: number, firstName: string, lastName: string }) =>
+    user.firstName.toLowerCase().includes(filterValue) ||
+    user.lastName.toLowerCase().includes(filterValue)
+  );
+
+  // Update the list of filtered users
+  this.filteredUsers = filteredUsers;
+}
+addTicket(){
+ // console.log(this.productForm.value);
+ // if(!this.editData){
+    if(this.productForm.valid){
+      this.apiTicket.createTicket(this.productForm.value)
+      .subscribe({
+        next:(res)=>{
+          this.notificationService.success("Ticket added successfully");
+          //this.productForm.reset();
+          //this.dialog.close('save');
+        },
+        error:()=>{
+          this.notificationService.danger("Error while adding the ticket")
+        }
+      })
+    }
+  //}else{
+  //  this.updateticket()
+ // }*/
+}
+updateticket(){
+  this.apiTicket.updateTicket(this.editData.ticketId, this.productForm.value)
+
+  .subscribe({
+    next:(res)=>{
+      this.notificationService.success("Ticket updated successfully");
+      this.productForm.reset();
+      this.dialog.close('update');
+    },
+    error:()=>{
+      this.notificationService.danger("Error while updating the record!!");
+    }
+
+  })
 }
 }

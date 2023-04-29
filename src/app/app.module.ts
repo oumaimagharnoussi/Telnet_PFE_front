@@ -63,6 +63,7 @@ import { DialogagentComponent } from './components/agent/dialogagent/dialogagent
 import { DetailComponent } from './components/agent/detail/detail.component';
 import {QRCodeModule} from 'angular2-qrcode'
 import { AngularEditorModule } from '@kolkov/angular-editor';
+
 export const CUSTOM_DT_FORMATS = {
   parse: {
     dateInput: 'L',
@@ -95,8 +96,6 @@ export const CUSTOM_DT_FORMATS = {
     AgentComponent,
     DialogagentComponent,
     DetailComponent,
-   
-    
   ],
   imports: [
     CommonModule,

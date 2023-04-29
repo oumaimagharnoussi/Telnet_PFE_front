@@ -19,6 +19,7 @@ export class User {
   picture: string = null;
  
   userPassword:string;
+
  
 }
 

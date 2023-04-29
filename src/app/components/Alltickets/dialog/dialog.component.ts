@@ -103,13 +103,20 @@ export class DialogComponent implements OnInit {
     this.selectAllChecked = !this.selectAllChecked;
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+  
+    // Filter users by first and last name
+    const filteredUsers = this.users.filter((user: { userId: number, firstName: string, lastName: string }) =>
+      user.firstName.toLowerCase().includes(filterValue) ||
+      user.lastName.toLowerCase().includes(filterValue)
+    );
+  
+    // Update the list of filtered users
+    this.filteredUsers = filteredUsers;
+  }
+  
 
-
-applyFilter(event: KeyboardEvent) {
-  const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-  const regex = new RegExp(`\\b${filterValue}`, 'gi');
-  this.data = this.originalData.filter(user => regex.test(user.firstName + ' ' + user.lastName));
-}
 
 }
 

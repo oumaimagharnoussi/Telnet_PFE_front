@@ -5,10 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { DateTimeService, ExcelService, MailService, NotificationService, SearchFilterService, SortService } from 'app/services/shared';
 import { WorkFromHomeRequest, WorkHomeRequestStatus, WorkHomeRequestStatusLabel } from 'app/models/human-resources/work-from-home';
 import { Groups, Identifier, User } from 'app/models/shared';
-import swal from 'sweetalert2';
-//import { WorkFromHomeService } from 'app/services/human-resources/work-from-home';
-import { EditWorkFromHomeRequestComponent } from '../human-resources/work-from-home/work-from-home-request/edit-work-from-home-request/edit-work-from-home-request.component';
-;
+
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs/index';
@@ -16,6 +13,7 @@ import { Subject, Subscription } from 'rxjs/index';
 import { PaginatorPipe } from 'app/pipes/shared';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
 import { AuthService } from 'app/services/auth.service';
+
 
 
 @Component({
@@ -90,6 +88,7 @@ export class TicketComponent implements OnInit, OnDestroy {
   openEditRequestDialog() {
     const dialogRef = this.dialog.open(AddTicketComponent,{
       width:'500px',
+      height:'600px'
     });
   }
   getworkFromHomeLabel(state) {
