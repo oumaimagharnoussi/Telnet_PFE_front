@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class TicketService {
 
-  private baseUrl: string = "https://localhost:7250/api/Ticket"
+  private baseUrl: string = "https://localhost:7250/api/Ticket/"
 
   constructor(private http: HttpClient) { }
 

@@ -34,6 +34,7 @@
               "node_modules/ion-rangeslider/css/ion.rangeSlider.css",
               "node_modules/ion-rangeslider/css/ion.rangeSlider.skinModern.css",
 	            "node_modules/angular-calendar/css/angular-calendar.css"
+              
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.js",

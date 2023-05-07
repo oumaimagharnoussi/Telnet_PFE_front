@@ -1,4 +1,4 @@
 export class Site {
-    id: number;
+    telnetId: number;
     libelle:string;
 }

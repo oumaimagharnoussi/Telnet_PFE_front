@@ -19,6 +19,7 @@ import { TicketsComponent } from './components/Alltickets/dialog/tickets/tickets
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AgentComponent } from './components/agent/agent.component';
 import { DetailComponent } from './components/agent/detail/detail.component';
+import { ChartComponent } from 'angular2-chartjs';
 
 
 
@@ -40,7 +41,8 @@ const routes: Routes = [
   {path: 'user-details/:userId', component: DetailComponent},
 
 
-
+  {path:'dash',component:ChartComponent},
+  {path:'Dashboard',component:DefaultComponent},
 
   {path:'agent',component:AgentComponent},
   

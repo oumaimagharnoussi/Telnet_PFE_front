@@ -16,9 +16,11 @@ export enum WorkHomeRequestStatusLabel {
   Rejected = 'Rejected'
 }
 
+
 export enum HalfDay {
   Morning = 'Morning',
   Afternoon = 'Afternoon',
+ 
 }
 
 export class WorkFromHomeRequest {

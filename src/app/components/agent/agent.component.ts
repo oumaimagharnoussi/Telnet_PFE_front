@@ -21,7 +21,7 @@ import { AuthService } from 'app/services/auth.service';
 })
 export class AgentComponent implements OnInit {
 
-  displayedColumns: string[] = ['name','email','Activitie','Teams','action'];
+  displayedColumns: string[] = ['Picture','Name','Email','Activitie','Teams','action'];
   userId: number;
   user: User = new User();
   selectedGroup: Groupe;

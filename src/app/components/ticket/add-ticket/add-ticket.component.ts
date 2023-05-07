@@ -13,6 +13,11 @@ import { AuthService } from 'app/services/auth.service';
 import { ApiService } from 'app/services/api.service';
 import { TicketService } from 'app/services/ticket.service';
 import { Ticket } from 'app/models/ticket.model';
+import { Etat } from 'app/models/Etat.model';
+import { StateService } from 'app/services/state.service';
+
+import { Site } from 'app/models/site.model';
+import { SiteService } from 'app/services/site.service';
 @Component({
   selector: 'app-add-ticket',
   templateUrl: './add-ticket.component.html',
@@ -86,24 +91,34 @@ export class AddTicketComponent implements OnInit {
   public firstName:string;
   public startDate:Date;
   public endDate: Date;
+ // halfDay: HalfDay;
+  halefDayItems = Object.values(HalfDay); // Suppression de la méthode map car elle n'est pas nécessaire
+selectedHalefDayItem: HalfDay = this.halefDayItems[0];
+
+halfDay: HalfDay = null; // Initialisation à null pour éviter une erreur undefined
+public isHalfDayChecked: boolean = false;
+
   groupId: number;
   groups: Groupe[];
   selectAllValue = 'selectAll';
   selectAllChecked = false;
   productForm: FormGroup;
   selectAllLabel = 'Select All';
-  
-  public isHalfDayChecked: boolean;
+ // halefDayItems = Object.values(HalfDay).map(key => HalfDay[key]);
+ // selectedHalefDayItem: HalfDay = this.halefDayItems[0];
+ // public isHalfDayChecked: boolean;
   workFromHomeRequest: WorkFromHomeRequest;
   dateTimeService: DateTimeService;
   isEdit = false;
-  halefDayItems = Object.values(HalfDay).map(key => HalfDay[key]);
-  selectedHalefDayItem: HalfDay = this.halefDayItems[0];
-  
   actionBtn:string="Save";
   supportGroupId: number;
-  ticket:Ticket;
-  
+ //public isHalfDayChecked = false;
+ 
+  //isHalfDayChecked = false;
+  ticket = new Ticket();
+  HalfDayValues = Object.values(HalfDay);
+  etats: Etat[];
+  sites:Site[];
 URGENT_ICON_NAME = 'urgent.png';
 URGENT_ICON_hight='Hight.png';
 URGENT_ICON_Medium='Medium.png';
@@ -113,7 +128,8 @@ URGENT_ICON_low='low.png'
   supportUsers: any;
   constructor(private formBuilder: FormBuilder, private mailService: MailService,
     private notificationService: NotificationService,private workFromHomeService: WorkFromHomeService,private dialogRef: MatDialogRef<AddTicketComponent>,
-    @Inject(MAT_DIALOG_DATA) public editData:any,private api:GroupService, private authservice:AuthService,private apiuser: ApiService,public dialog: MatDialogRef<AddTicketComponent>,public apiTicket:TicketService) { }
+    @Inject(MAT_DIALOG_DATA) public editData:any,private api:GroupService, private authservice:AuthService,private apiuser: ApiService,
+    public dialog: MatDialogRef<AddTicketComponent>,public apiTicket:TicketService, private apiEtat:StateService,private apiSite:SiteService) { }
 
     ngOnInit(): void {
       this.api.getGroupes().subscribe((data: Groupe[]) => {
@@ -149,24 +165,38 @@ URGENT_ICON_low='low.png'
 
 
       this.productForm = this.formBuilder.group({
-       // PrisEnChargePar:['', Validators.required],
-       userId:[this.userId, Validators.required],
-
+        // PrisEnChargePar:['', Validators.required],
+        userId:[this.userId, Validators.required],
         startDate : ['', Validators.required],
         endDate : ['', Validators.required],
         priorite : ['', Validators.required],
         type : ['', Validators.required],
-        Description : ['', Validators.required],
-       /* halfDay: ['', Validators.required],
-       
-       
+        description : ['', Validators.required],
+        halfDay: ['', Validators.required],
+        halfDayCheckBox: [false],
         id:['', Validators.required],
         dayNumber:['', Validators.required],
-        file:['', Validators.required],
-        commentaire:['', Validators.required]*/
+       // file:['', Validators.required],
+       // commentaire:['', Validators.required],
+        telnetId:['', Validators.required],
       });
       
-     /* if (this.editData) {
+
+      this.apiEtat.getEtats().subscribe(data => {
+        this.etats = data;
+      });
+      this.apiSite.getSites().subscribe(data => {
+        this.sites = data;
+      });
+
+     
+      
+      
+      this.productForm.get('halfDayCheckBox').valueChanges.subscribe((value) => {
+        this.isHalfDayChecked = value;
+      });
+      
+      if (this.editData) {
         this.actionBtn = "Update";
         this.productForm.patchValue({
           priorite: this.editData.priorite,
@@ -176,13 +206,14 @@ URGENT_ICON_low='low.png'
           description: this.editData.description,
           halfDay: this.editData.halfDay,
           userId: this.editData.userId,
-          PrisEnChargePar: this.editData.PrisEnChargePar,
+         // PrisEnChargePar: this.editData.PrisEnChargePar,
           id: this.editData.id,
           dayNumber: this.editData.dayNumber,
-          file: this.editData.file,
-          commentaire: this.editData.commentaire
+          //file: this.editData.file,
+         // commentaire: this.editData.commentaire
+         telnetId:this.editData.telnetId
         });
-      }*/
+      }
     }
   
     getUsersByGroupId(groupId: number) {
@@ -212,11 +243,12 @@ URGENT_ICON_low='low.png'
   }
   OnChangeHalfDay() {
     if (!this.isHalfDayChecked) {
-      this.workFromHomeRequest.halfDay = null;
+      this.ticket.halfDay = null; // Utilisation de null plutôt que '' pour éviter une erreur undefined
     } else {
-      this.workFromHomeRequest.endDate = this.workFromHomeRequest.startDate;
+      this.ticket.endDate = this.ticket.startDate;
     }
   }
+  
   onChangingDate() {
     if (this.isHalfDayChecked) {
       this.ticket.endDate = this.ticket.startDate;
@@ -226,9 +258,6 @@ URGENT_ICON_low='low.png'
       }
     }
   }
-
-
- 
   calculateBetweenDates() {
     let dayNumber = 0;
     if (this.isHalfDayChecked) {
@@ -250,6 +279,9 @@ URGENT_ICON_low='low.png'
     { value: Priorite.Medium, label: 'Medium' , icon: this.URGENT_ICON_Medium},
     { value: Priorite.Low, label: 'Low', icon: this.URGENT_ICON_low }
   ];
+
+ 
+
   types = [
     { value: Type.Assistance_diverse, label: 'Assistance diverse' },
     { value: Type.impression_locale, label: 'Impression locale' },
@@ -304,26 +336,47 @@ applyFilter(event: Event) {
   // Update the list of filtered users
   this.filteredUsers = filteredUsers;
 }
-addTicket(){
- // console.log(this.productForm.value);
- // if(!this.editData){
-    if(this.productForm.valid){
-      this.apiTicket.createTicket(this.productForm.value)
-      .subscribe({
-        next:(res)=>{
-          this.notificationService.success("Ticket added successfully");
-          //this.productForm.reset();
-          //this.dialog.close('save');
-        },
-        error:()=>{
-          this.notificationService.danger("Error while adding the ticket")
-        }
-      })
+addTicket() {
+  if(!this.editData){
+  if (this.productForm.valid) {
+    if (this.isHalfDayChecked) {
+      this.productForm.get('endDate').clearValidators();
+      this.productForm.get('endDate').updateValueAndValidity();
+      this.productForm.get('halfDay').setValidators(Validators.required);
+      this.productForm.get('endDate').setValue(null); 
+      this.productForm.get('endDate').markAsUntouched();
+      this.productForm.get('endDate').markAsPristine();
+    } else {
+      this.productForm.get('endDate').setValidators(Validators.required);
+      this.productForm.get('halfDay').clearValidators();
+      this.productForm.get('halfDay').updateValueAndValidity();
+      this.productForm.get('halfDay').markAsUntouched();
+      this.productForm.get('halfDay').markAsPristine();
     }
-  //}else{
-  //  this.updateticket()
- // }*/
+
+    this.productForm.updateValueAndValidity();
+
+    if (this.productForm.valid) {
+      this.apiTicket.createTicket(this.productForm.value)
+        .subscribe({
+          next: (res) => {
+            this.notificationService.success("Ticket added successfully");
+            this.productForm.reset();
+            this.dialog.close('save');
+          },
+          error: () => {
+            this.notificationService.danger("Error while adding the ticket")
+          }
+        });
+    }
+  }
+}else{
+  this.updateticket()
 }
+}
+
+
+
 updateticket(){
   this.apiTicket.updateTicket(this.editData.ticketId, this.productForm.value)
 

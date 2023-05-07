@@ -76,10 +76,10 @@ export enum Roles {
 //j'ai ajouter ce eum
 export enum Priorite
     {
-        Urgent,
-        Hight,
-        Medium,
-        Low
+        Urgent =1,
+        Hight = 2 ,
+        Medium = 3 ,
+        Low = 4
     }
 
 export enum Type {
@@ -91,4 +91,7 @@ export enum Type {
     Droit_d_acces_revue
   }    
 
- 
+  export enum HalfDay {
+    Morning = 'Morning',
+    Afternoon = 'Afternoon',
+  }

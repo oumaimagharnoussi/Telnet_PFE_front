@@ -5,6 +5,7 @@ import { ActivitieService } from 'app/services/activitie.service';
 import { ApiService } from 'app/services/api.service';
 import { GroupService } from 'app/services/group.service';
 import { NotificationService } from 'app/services/shared';
+import { SiteService } from 'app/services/site.service';
 
 @Component({
   selector: 'app-dialogagent',
@@ -15,12 +16,14 @@ export class DialogagentComponent implements OnInit {
   groups: any[] = [];
   selectedGroup: any;
   activities: any[] = [];
+  site: any[] = [];
   selectedActivitie: any;
+  selectedSite : any;
   productForm: FormGroup;
   actionBtn:string="Save";
   userId: number;
   
-  constructor(private formBuilder: FormBuilder, private notificationService: NotificationService,
+  constructor(private formBuilder: FormBuilder, private notificationService: NotificationService, private apisite:SiteService,
       @Inject(MAT_DIALOG_DATA) public editData:any, private apigroup:GroupService, private apiactivitie:ActivitieService,
       private api:ApiService, public dialog: MatDialogRef<DialogagentComponent>) { }
   
@@ -32,7 +35,8 @@ export class DialogagentComponent implements OnInit {
       userName : ['', Validators.required],
       email : ['', Validators.required],
       groupId: ['', Validators.required],
-      activityId:['', Validators.required]
+      activityId:['', Validators.required],
+      telnetId:['', Validators.required]
     });
     
     if (this.editData) {
@@ -44,11 +48,13 @@ export class DialogagentComponent implements OnInit {
         userName: this.editData.userName,
         email: this.editData.email,
         groupId: this.editData.groupId,
-        activityId: this.editData.activityId
+        activityId: this.editData.activityId,
+        telnetId: this.editData.telnetId
       });
 
       this.selectedGroup = this.groups.find(g => g.groupId === this.editData.groupId);
       this.selectedActivitie = this.activities.find(a => a.activityId === this.editData.activityId);
+      this.selectedSite = this.site.find(s => s.telnetId === this.editData.telnetId);
     }
 
     this.apigroup.getGroupes().subscribe(
@@ -67,6 +73,14 @@ export class DialogagentComponent implements OnInit {
         console.log(error);
       }
     );
+    this.apisite.getSites().subscribe(
+      data => {
+        this.site = data;
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   onGroupSelectionChange(event: any) {
@@ -75,6 +89,9 @@ export class DialogagentComponent implements OnInit {
 
   onActivitieSelectionChange(event: any) {
     this.selectedActivitie = this.activities.find(a => a.activityId === event.value);
+  }
+  onSiteSelectionChange(event: any) {
+    this.selectedSite = this.site.find(s => s.telnetId === event.value);
   }
   
     addGroup(){

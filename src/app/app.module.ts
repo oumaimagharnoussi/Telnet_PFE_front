@@ -96,6 +96,9 @@ export const CUSTOM_DT_FORMATS = {
     AgentComponent,
     DialogagentComponent,
     DetailComponent,
+    
+   
+    
   ],
   imports: [
     CommonModule,
@@ -103,6 +106,7 @@ export const CUSTOM_DT_FORMATS = {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    
     BrowserAnimationsModule,
     SimpleNotificationsModule.forRoot(),
     AppRoutingModule,
@@ -127,8 +131,8 @@ export const CUSTOM_DT_FORMATS = {
     MatTableModule,
     MatSortModule,
    QRCodeModule,
-   AngularEditorModule
-   
+   AngularEditorModule,
+  
  
   ],
   entryComponents: [

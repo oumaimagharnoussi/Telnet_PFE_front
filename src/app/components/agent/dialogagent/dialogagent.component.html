@@ -49,6 +49,13 @@
               <mat-option *ngFor="let activitie of activities" [value]="activitie.activityId">{{ activitie.libelle }}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <mat-form-field class="col-sm-6">
+            <mat-label>Site</mat-label>
+            <mat-select placeholder="Select a site" formControlName="telnetId">
+              <mat-option *ngFor="let site of site" [value]="site.telnetId">{{ site.libelle }}</mat-option>
+            </mat-select>
+          </mat-form-field>
     
           <div mat-dialog-actions [align]="'end'">
             <button mat-raised-button color="warn" mat-dialog-close>Close</button>

@@ -7,12 +7,14 @@ import { DetailComponent } from 'app/components/agent/detail/detail.component';
 import { Activitie } from 'app/models/Activitie.model';
 import { Groupe } from 'app/models/groupe.model';
 import { Groups, User } from 'app/models/shared';
+import { Site } from 'app/models/site.model';
 import { ActivitieService } from 'app/services/activitie.service';
 import { ApiService } from 'app/services/api.service';
 import { AuthService } from 'app/services/auth.service';
 import { ChangepasswordService } from 'app/services/changepassword.service';
 import { GroupService } from 'app/services/group.service';
 import { NotificationService } from 'app/services/shared';
+import { SiteService } from 'app/services/site.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 @Component({
   selector: 'app-profile',
@@ -25,6 +27,7 @@ export class ProfileComponent implements OnInit {
   group: Groupe = new Groupe();
   userId:number;
   selectedGroup: Groupe;
+  selectedSite:Site;
   selectedActivitie: Activitie;
   passwordForm: FormGroup;
   errorMessage: string;
@@ -38,6 +41,7 @@ public groupId:number;
 public Activitie:string;
 public firstName:string;
 public picture: string = null;
+public telnetId:number;
 currentUser: any;
 
   constructor(@Inject(MAT_DIALOG_DATA) public editData:any,
@@ -50,7 +54,7 @@ currentUser: any;
   private renderer: Renderer2,
   private authservice:AuthService,private api:GroupService,
   private act:ActivitieService,
-  private servicepass:ChangepasswordService
+  private servicepass:ChangepasswordService, private apisite:SiteService
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +88,7 @@ currentUser: any;
     this.firstName = decodedToken.firstname;
     this.picture = decodedToken.pictureUrl;
     this.userId = decodedToken.userId;
+    this.telnetId= decodedToken.site
 
     // Remplir les champs du formulaire avec les informations du user
     this.productForm.controls['userNumber'].setValue(this.userNumber);
@@ -99,11 +104,17 @@ currentUser: any;
     const userActivitieId = decodedToken.activitie;
     this.getActivitieById(userActivitieId);
 
+    const usersiteId = decodedToken.site;
+    this.getSiteById(usersiteId);
+
     this.userId = decodedToken.userId;
     
   }
   
-    
+  getSiteById(telnetId: number) {
+    this.apisite.getSiteById(telnetId)
+      .subscribe(site => this.selectedSite = site);
+  } 
   
     getGroupById(groupId: number) {
       this.api.getGroupeById(groupId)
@@ -138,7 +149,8 @@ currentUser: any;
         hierarchicalHead1: 0,
         hierarchicalHead2: 0,
         hasSubordinates: false,
-        userPassword: ''
+        userPassword: '',
+        telnetId: 0
       };
     
       // Call the updateUser method with the updated user data

@@ -9,8 +9,8 @@
 </div>
 <div class="modal_body">
     <div class="p-20 z-depth-top-0 waves-effect" placement="bottom">
-        <form [formGroup]="productForm" >
-            <!--<div class="row m-b-6" *ngIf="selectedGroup?.libelle === 'Support'">
+      <form [formGroup]="productForm">
+            <div class="row m-b-6" *ngIf="selectedGroup?.libelle === 'Support'">
                 <mat-form-field class="col-sm-12">
                   <mat-select placeholder="Pris en charge par" name="resource" required formControlName="userId">
                     <ngx-mat-select-search [placeholderLabel]="'Search'" [noEntriesFoundLabel]="'No options found'" type="search"
@@ -22,47 +22,53 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-              </div>-->
-              
-
-            
-              <div class="row m-b-6" *ngIf="selectedGroup?.libelle === 'Support'">
-                <mat-form-field class="col-sm-12">
-                  <input matInput readonly type="text" name="fullName" [value]="firstName + ' ' + lastName" placeholder="Ressouce" required>
-                </mat-form-field>
               </div>
               
-            
-             <!-- <div class="row m-b-6">
+
+              <div class="row m-b-6">
+                <div class="col-sm-6" *ngIf="selectedGroup?.libelle === 'Support'">
+                  <mat-form-field class="col-sm-12">
+                    <input matInput readonly type="text" formControlName="fullName" [value]="firstName + ' ' + lastName" placeholder="Ressouce" required>
+                  </mat-form-field>
+                </div>
                 <div class="col-sm-6">
-                  <mat-checkbox name="halfDayCheckBox" class="checkbox-halfday" [(ngModel)]="isHalfDayChecked" (change)="OnChangeHalfDay()">
+                  <mat-form-field class="col-sm-12">
+                    <mat-select placeholder="Site" formControlName="telnetId">
+                      <mat-option *ngFor="let site of sites" [value]="site.telnetId">{{ site.libelle }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              
+              <div class="row m-b-6">
+                <div class="col-sm-6">
+                  <mat-checkbox class="checkbox-halfday" formControlName="halfDayCheckBox" (change)="OnChangeHalfDay()">
                     Half Day
                   </mat-checkbox>
                 </div>
                 <mat-form-field class="col-sm-6">
-                  <mat-select placeholder="Day Time..." name="DayTime" [disabled]="!isHalfDayChecked" formControlName="halfDay">
+                  <mat-select placeholder="Day Time..." name="DayTime" [disabled]="!productForm.get('halfDayCheckBox').value" formControlName="halfDay">
                     <mat-option *ngFor="let item of halefDayItems" [value]="item">
                       {{ item }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-              </div>-->
-              
-            <div class="row m-b-6">
+              </div>
+              <div class="row m-b-6">
                 <mat-form-field class="date-field col-sm-6">
-                    <input name="startDate" matInput [matDatepicker]="picker11" placeholder="From" (keypress)="dateOnly($event)" (ngModelChange)="onChangingDate()" required formControlName="startDate">
-                    <mat-datepicker-toggle matSuffix [for]="picker11"></mat-datepicker-toggle>
-                    <mat-datepicker #picker11></mat-datepicker>
-                  </mat-form-field>
-                  
-                  <mat-form-field class="date-field col-sm-6">
-                    <input name="EndDate" matInput [matDatepicker]="picker22" placeholder="To" (keypress)="dateOnly($event)" [disabled]="isHalfDayChecked" required formControlName="endDate">
-                    <mat-datepicker-toggle matSuffix [for]="picker22"></mat-datepicker-toggle>
-                    <mat-datepicker #picker22></mat-datepicker>
-                  </mat-form-field>
-                  
-
-
+                  <input matInput [matDatepicker]="picker11" placeholder="From" (keypress)="dateOnly($event)" (ngModelChange)="onChangingDate()" formControlName="startDate" required>
+                  <mat-datepicker-toggle matSuffix [for]="picker11"></mat-datepicker-toggle>
+                  <mat-datepicker #picker11></mat-datepicker>
+                </mat-form-field>
+                
+                <mat-form-field class="date-field col-sm-6">
+                  <input name="EndDate" matInput [matDatepicker]="picker22" placeholder="To" (keypress)="dateOnly($event)" [disabled]="isHalfDayChecked" [required]="!isHalfDayChecked" formControlName="endDate">
+                  <mat-datepicker-toggle matSuffix [for]="picker22"></mat-datepicker-toggle>
+                  <mat-datepicker #picker22></mat-datepicker>
+                </mat-form-field>
+              </div>
+              
+              
                <!--<mat-list>
                     <mat-list-item>
                       <h3 class="mat-subheader col-sm-2">Status</h3>
@@ -96,7 +102,15 @@
                     </mat-select>
                 </mat-form-field>
  
-  
+               <div *ngIf="selectedGroup?.libelle === 'Support'">
+                  <mat-form-field class="col-sm-6">
+                    <mat-select placeholder="etat" name="etat" formControlName="id">
+                      <mat-option *ngFor="let etat of etats" [value]="etat.id">{{ etat.libelle }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+<br>                
+   
     
                 
                 <label for="exampleFormControlTextarea1">Description</label>
@@ -107,12 +121,12 @@
         </label>
         <input type="file" class="form-control-file" id="exampleFormControlFile1">
     </div>
-    <angular-editor [placeholder]="'Enter text here...'" [config]="config" formControlName="Description"></angular-editor>
+    <angular-editor [placeholder]="'Enter text here...'" [config]="config" formControlName="description"></angular-editor>
 </div>
 
 
 
-            </div>
+          
             <div class="row m-t-20">
                 <div class="col-lg-12">
                     <div class="row f-right">

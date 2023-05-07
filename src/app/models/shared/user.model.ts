@@ -1,5 +1,6 @@
 import { Groupe } from 'app/models/groupe.model';
 import { Activitie } from 'app/models/Activitie.model';
+import { Site } from '../site.model';
 
 export class User {
   userId: number;
@@ -19,7 +20,7 @@ export class User {
   picture: string = null;
  
   userPassword:string;
-
+  telnetId: number;
  
 }
 
