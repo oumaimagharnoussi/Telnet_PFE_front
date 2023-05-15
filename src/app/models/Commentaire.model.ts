@@ -7,4 +7,5 @@ export class Commentaire {
   user: User;
   ticketId: number;
   ticket: Ticket;
+  dateCreation:Date;
 }

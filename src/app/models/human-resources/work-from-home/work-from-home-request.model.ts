@@ -15,13 +15,12 @@ export enum WorkHomeRequestStatusLabel {
   Approved = 'Approved',
   Rejected = 'Rejected'
 }
-
-
 export enum HalfDay {
   Morning = 'Morning',
   Afternoon = 'Afternoon',
  
 }
+
 
 export class WorkFromHomeRequest {
   @persisted(true)

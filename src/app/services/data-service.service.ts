@@ -6,13 +6,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DataService {
+  private baseUrl: string = "https://localhost:7250/api/User/"
+  constructor(private http: HttpClient) {}
 
-  private apiUrl = 'https://localhost:7250/api/';
-
-  constructor(private http: HttpClient) { }
-
-  getData(): Observable<any> {
-    return this.http.get(this.apiUrl + 'data');
+  getData() {
+    return this.http.get('https://localhost:7250/api/User/');
   }
 
+  getUsers(){
+    return this.http.get<any>(this.baseUrl);
+  }
 }

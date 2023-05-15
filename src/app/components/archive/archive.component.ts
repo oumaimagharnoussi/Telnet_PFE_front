@@ -4,14 +4,14 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { DateTimeService, ExcelService, MailService, NotificationService, SearchFilterService, SortService } from 'app/services/shared';
 import { WorkFromHomeRequest, WorkHomeRequestStatus, WorkHomeRequestStatusLabel } from 'app/models/human-resources/work-from-home';
-import { Groups, HalfDay, Identifier, Type, User } from 'app/models/shared';
+import { Groups, HalfDay, Identifier, User } from 'app/models/shared';
 
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Subject, Subscription, of } from 'rxjs/index';
+import { Subject, Subscription, forkJoin, of } from 'rxjs/index';
 
 import { PaginatorPipe } from 'app/pipes/shared';
-import { AddTicketComponent } from './add-ticket/add-ticket.component';
+
 import { AuthService } from 'app/services/auth.service';
 import { TicketService } from 'app/services/ticket.service';
 import { Groupe } from 'app/models/groupe.model';
@@ -21,24 +21,21 @@ import { Ticket } from 'app/models/ticket.model';
 import { StateService } from 'app/services/state.service';
 import { ApiService } from 'app/services/api.service';
 import { ActivitieService } from 'app/services/activitie.service';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { Etat } from 'app/models/Etat.model';
 import { GroupService } from 'app/services/group.service';
-import { SiteService } from 'app/services/site.service';
-
-
-
+import { AddTicketComponent } from '../ticket/add-ticket/add-ticket.component';
 @Component({
-  selector: 'app-ticket',
-  templateUrl: './ticket.component.html',
-  styleUrls: ['./ticket.component.scss']
+  selector: 'app-archive',
+  templateUrl: './archive.component.html',
+  styleUrls: ['./archive.component.scss']
 })
-export class TicketComponent implements OnInit, OnDestroy {
+export class ArchiveComponent implements OnInit, OnDestroy {
  
   @Input() workFromHomeRequests: WorkFromHomeRequest[];
-  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber','type',
-    'site', 'state', 'buttons'];
+  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber',
+    'halfDay', 'state', 'buttons'];
     userId: number;
     user: User = new User();
     selectedGroup: Groupe;
@@ -59,7 +56,7 @@ export class TicketComponent implements OnInit, OnDestroy {
  // displayAddRequestComponentdialogRef: MatDialogRef<AddTicketComponent>;
  groupId: number;
  groups: Groupe[];
- types:Type;
+
   paginatorPipe: PaginatorPipe;
   dropdownSettings = {};
   dropdownSettingsStatus = {};
@@ -95,7 +92,7 @@ export class TicketComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data:any,private dialog: MatDialog,private apistate:StateService,
     private searchFilterService: SearchFilterService,private api:TicketService,private apiuser:ApiService,
     private apiactivitie:ActivitieService, private apiEtat:StateService,
-    private mailService: MailService,private apigroup:GroupService, private apisite:SiteService,
+    private mailService: MailService,private apigroup:GroupService,
     private dateTimeService: DateTimeService,private authservice:AuthService,
     injector: Injector) {
       this.dialog = injector.get<MatDialog>(MatDialog);
@@ -121,9 +118,6 @@ export class TicketComponent implements OnInit, OnDestroy {
       const userGroupId = decodedToken.Groups;
       this.getGroupById(userGroupId);
   }
-
-
-  //////////////////////
   getGroupById(groupId: number) {
     this.apigroup.getGroupeById(groupId)
       .subscribe(group => this.selectedGroup = group);
@@ -137,12 +131,7 @@ export class TicketComponent implements OnInit, OnDestroy {
     return ticket.etat.libelle !== 'Emis' || (this.selectedGroup && this.selectedGroup.libelle !== 'ressource');
   }
   
-  openEditRequestDialog() {
-    const dialogRef = this.dialog.open(AddTicketComponent,{
-      width:'500px',
-      height:'600px'
-    });
-  }
+ 
   getworkFromHomeLabel(state) {
     switch (state) {
       case WorkHomeRequestStatus.InProgress:
@@ -168,7 +157,6 @@ export class TicketComponent implements OnInit, OnDestroy {
     this.selectedActivitiesIdentifiers = [];
   }
  
-  
   getAllTickets() {
     this.api.getTickets().subscribe({
       next: (res) => {
@@ -185,9 +173,7 @@ export class TicketComponent implements OnInit, OnDestroy {
             })
           );
         };
-        
-
-        
+  
         const getActivitieById = (activityId) => {
           return this.apiactivitie.getActivitieById(activityId);
         };
@@ -205,30 +191,10 @@ export class TicketComponent implements OnInit, OnDestroy {
             getActivitieById(user.activityId).subscribe((activitie) => {
               ticket.activityName = activitie.libelle;
             });
-
-            
           });
-
-          const typeObject = this.type.find((obj) => obj.value === ticket.type);
   
-  // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
-  if (typeObject) {
-    ticket.typeValue = typeObject.label;
-  } else {
-    ticket.typeValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
-  }
-
-
-
-  const getSiteById = (telnetId) => {
-    return this.apisite.getSiteById(telnetId);
-  };
-
-  // ...
-
-  getSiteById(ticket.telnetId).subscribe((site) => {
-    ticket.siteLabel = site.libelle;
-  });
+          
+  
           return ticket;
         });
   
@@ -241,22 +207,8 @@ export class TicketComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  getEtatClass(etatLabel: string): string {
-    if (etatLabel === 'Emis') {
-      return 'gray-background';
-    } else if (etatLabel === 'Pris en charge') {
-      return 'green-background';
-    } else if (etatLabel === 'Résolu') {
-      return 'bleu-background';
-    } else if (etatLabel === 'Clos') {
-      return 'black-background';
-    } else {
-      return '';
-    }
-  }
   
-
+  
   editticket(ticket:any){
     this.dialog.open(AddTicketComponent,{
       width:'500px',
@@ -282,17 +234,5 @@ export class TicketComponent implements OnInit, OnDestroy {
       })
     
     }
-    
 
-
-
-    type = [
-      { value: Type.Assistance_diverse, label: 'Assistance diverse' },
-      { value: Type.impression_locale, label: 'Impression locale' },
-      { value: Type.impression_reseau, label: 'Impression reseau' },
-      { value: Type.Droit_d_acces_initial, label: 'Droit d\'acces initial' },
-      { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
-      { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
-    ];
-    
 }

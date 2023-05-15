@@ -128,4 +128,20 @@ h1.mat-dialog-title {
     padding: 0;
     display: inline-block;
 }
-  
+
+.attach-icon {
+  font-size: 24px;
+  vertical-align: middle;
+}
+
+.file-name {
+  margin-left: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  vertical-align: middle;
+}
+.horizontal-line {
+  border-top: 2px solid #3f629d;
+  margin: 20px;
+}

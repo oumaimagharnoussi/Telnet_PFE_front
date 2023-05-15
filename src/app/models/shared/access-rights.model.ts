@@ -91,7 +91,14 @@ export enum Type {
     Droit_d_acces_revue
   }    
 
+
+
+
   export enum HalfDay {
-    Morning = 'Morning',
-    Afternoon = 'Afternoon',
+    DesQuePossible = 1,
+    DansLHeureQuiSuit = 2,
+    DansLaDemiJournee = 3,
+    Dans1Jour = 4,
+    Dans2Jours = 5,
+    DansLaSemaine = 6
   }

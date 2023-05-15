@@ -10,7 +10,7 @@
 <div class="modal_body">
     <div class="p-20 z-depth-top-0 waves-effect" placement="bottom">
       <form [formGroup]="productForm">
-            <div class="row m-b-6" *ngIf="selectedGroup?.libelle === 'Support'">
+           <div class="row m-b-6" *ngIf="selectedGroup?.libelle === 'Support'">
                 <mat-form-field class="col-sm-12">
                   <mat-select placeholder="Pris en charge par" name="resource" required formControlName="userId">
                     <ngx-mat-select-search [placeholderLabel]="'Search'" [noEntriesFoundLabel]="'No options found'" type="search"
@@ -25,61 +25,42 @@
               </div>
               
 
-              <div class="row m-b-6">
-                <div class="col-sm-6" *ngIf="selectedGroup?.libelle === 'Support'">
-                  <mat-form-field class="col-sm-12">
-                    <input matInput readonly type="text" formControlName="fullName" [value]="firstName + ' ' + lastName" placeholder="Ressouce" required>
-                  </mat-form-field>
-                </div>
-                <div class="col-sm-6">
-                  <mat-form-field class="col-sm-12">
+             <div class="row m-b-6" *ngIf="selectedGroup?.libelle === 'Support'">
+                <mat-form-field class="col-sm-12">
+                  <input matInput readonly type="text" name="fullName" [value]="firstName + ' ' + lastName" placeholder="Ressouce" required>
+                </mat-form-field>
+              </div>
+
+              
+              
+                
+                  <mat-form-field class="col-sm-6">
                     <mat-select placeholder="Site" formControlName="telnetId">
                       <mat-option *ngFor="let site of sites" [value]="site.telnetId">{{ site.libelle }}</mat-option>
                     </mat-select>
                   </mat-form-field>
-                </div>
-              </div>
+               
               
-              <div class="row m-b-6">
-                <div class="col-sm-6">
-                  <mat-checkbox class="checkbox-halfday" formControlName="halfDayCheckBox" (change)="OnChangeHalfDay()">
-                    Half Day
-                  </mat-checkbox>
-                </div>
-                <mat-form-field class="col-sm-6">
-                  <mat-select placeholder="Day Time..." name="DayTime" [disabled]="!productForm.get('halfDayCheckBox').value" formControlName="halfDay">
-                    <mat-option *ngFor="let item of halefDayItems" [value]="item">
-                      {{ item }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
+              <mat-form-field class="col-sm-6">
+                <mat-select placeholder="Delai" name="delai" formControlName="halfDay">
+                    <mat-option *ngFor="let halfDay of halfDays" [value]="halfDay.value">{{ halfDay.label }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+ 
               <div class="row m-b-6">
                 <mat-form-field class="date-field col-sm-6">
-                  <input matInput [matDatepicker]="picker11" placeholder="From" (keypress)="dateOnly($event)" (ngModelChange)="onChangingDate()" formControlName="startDate" required>
+                  <input matInput [matDatepicker]="picker11" placeholder="From" (keypress)="dateOnly($event)"  formControlName="startDate" required>
                   <mat-datepicker-toggle matSuffix [for]="picker11"></mat-datepicker-toggle>
                   <mat-datepicker #picker11></mat-datepicker>
                 </mat-form-field>
                 
                 <mat-form-field class="date-field col-sm-6">
-                  <input name="EndDate" matInput [matDatepicker]="picker22" placeholder="To" (keypress)="dateOnly($event)" [disabled]="isHalfDayChecked" [required]="!isHalfDayChecked" formControlName="endDate">
+                  <input name="EndDate" matInput [matDatepicker]="picker22" placeholder="To" (keypress)="dateOnly($event)"  formControlName="endDate" required>
                   <mat-datepicker-toggle matSuffix [for]="picker22"></mat-datepicker-toggle>
                   <mat-datepicker #picker22></mat-datepicker>
                 </mat-form-field>
               </div>
-              
-              
-               <!--<mat-list>
-                    <mat-list-item>
-                      <h3 class="mat-subheader col-sm-2">Status</h3>
-                      <div class="col-sm-10">
-                        <ng-multiselect-dropdown class="multi-search" [placeholder]="'Select...'"
-                          [settings]="dropdownSettingsStatus" [data]="statusIdentifiers"
-                          [(ngModel)]="selectedStatusesIdentifiers" style="width: 100%;">
-                        </ng-multiselect-dropdown>
-                      </div>
-                    </mat-list-item>
-                  </mat-list>--> 
+          
                   <mat-form-field class="col-sm-6">
                     <mat-select placeholder="Priorite" name="Priorite" formControlName="priorite">
                       <mat-option *ngFor="let priorite of priorites" [value]="priorite.value">
@@ -102,7 +83,7 @@
                     </mat-select>
                 </mat-form-field>
  
-               <div *ngIf="selectedGroup?.libelle === 'Support'">
+                <div *ngIf="editData && selectedGroup?.libelle === 'Support'">
                   <mat-form-field class="col-sm-6">
                     <mat-select placeholder="etat" name="etat" formControlName="id">
                       <mat-option *ngFor="let etat of etats" [value]="etat.id">{{ etat.libelle }}</mat-option>
@@ -112,21 +93,47 @@
 <br>                
    
     
+
                 
                 <label for="exampleFormControlTextarea1">Description</label>
-<div class="textarea-container">
-    <div>
-        <label for="exampleFormControlFile1">
-            <mat-icon>attach_file</mat-icon>
-        </label>
-        <input type="file" class="form-control-file" id="exampleFormControlFile1">
-    </div>
-    <angular-editor [placeholder]="'Enter text here...'" [config]="config" formControlName="description"></angular-editor>
-</div>
-
-
-
-          
+                <div class="textarea-container">
+                  
+                 
+                  <angular-editor [placeholder]="'Enter text here...'" [config]="config" formControlName="description"></angular-editor>
+                </div>
+                
+                <div>
+                  <label for="fileInput">
+                    <mat-icon class="attach-icon">attach_file</mat-icon>
+                  </label>
+                  <input type="file" id="fileInput" (change)="onFileSelected($event)" formControlName="File">
+                  <a *ngIf="fileName" [href]="fileUrl" download="{{ fileName }}">{{ fileName }}</a>
+                </div>
+                
+                <div *ngIf="editData">
+                <div>
+                  <label>File:</label>
+                  <a [href]="fileUrl" download="{{ editData.file}}">{{ editData.file }}</a>
+                </div>
+              </div>   
+              <div *ngIf="editData">        
+                <hr class="horizontal-line">
+                
+                <div class="form-group">
+                  <label for="exampleFormControlTextarea1">Comment</label>
+                  <textarea class="form-control" rows="3" formControlName="commentaire"></textarea>
+                </div>
+                
+                <button type="button" class="btn btn-sm btn-primary waves-light m-r-10 ripple" style="font-size: inherit;" (click)="addComment()">
+                  <em class="icofont icofont-plus"></em> Add Comment
+                </button>
+              
+                <div *ngFor="let commentaire of commentaires">
+                  <h1>{{ commentaire.libelle }}</h1>
+                  <!--<p>{{ commentaire.user.firstName }} {{ commentaire.user.lastName }} - {{ commentaire.dateCreation | date }}</p>
+    <p>{{ commentaire.libelle }}</p>-->
+                </div>
+              </div>
             <div class="row m-t-20">
                 <div class="col-lg-12">
                     <div class="row f-right">

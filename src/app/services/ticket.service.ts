@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Commentaire } from 'app/models/Commentaire.model';
 import { Ticket } from 'app/models/ticket.model';
 import { Observable } from 'rxjs';
 
@@ -9,7 +10,6 @@ import { Observable } from 'rxjs';
 export class TicketService {
 
   private baseUrl: string = "https://localhost:7250/api/Ticket/"
-
   constructor(private http: HttpClient) { }
 
   getTickets(){
@@ -18,6 +18,14 @@ export class TicketService {
   getTicketById(ticketId: number): Observable<Ticket>{
     return this.http.get<Ticket>(`${this.baseUrl}${ticketId}`);
   }
+  getCommentaires(ticketId: number): Observable<Ticket> {
+    return this.http.get<Ticket>(`${this.baseUrl}${ticketId}/commentaires`);
+  }
+  loadCommentaires(ticketId: number): Observable<Commentaire[]> {
+    const url = this.baseUrl + ticketId + "/commentaires";
+    return this.http.get<Commentaire[]>(url);
+  }
+  
   getTicketList(): Observable<Ticket[]>{
     return this.http.get<Ticket[]>(`${this.baseUrl}`);
   }

@@ -1,7 +1,7 @@
 import { Commentaire } from "./Commentaire.model";
 import { Etat } from "./Etat.model";
-import { HalfDay } from "./human-resources/work-from-home";
-import { Priorite, Type, User } from "./shared";
+
+import { HalfDay, Priorite, Type, User } from "./shared";
 
 export class Ticket {
   ticketId: number;
@@ -14,17 +14,11 @@ export class Ticket {
   prisEnChargePar: number;
   user: User;
   telnetId:number;
-  id: number;
+  id: number; //id de class Etat
   etat: Etat;
   dayNumber: number;
   file: string;
-  commentaire: Commentaire[];
- 
-  public halfDay = '';
-  public halfDayLabel = ''; // new property to hold the label
-
-  constructor() {
-    // set default value for halfDayLabel in the constructor
-    this.halfDayLabel = '';
-  }
+  commentaires: Commentaire[];
+  halfDay : HalfDay;
+  
 }

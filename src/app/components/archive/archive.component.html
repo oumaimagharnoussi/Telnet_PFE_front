@@ -142,16 +142,7 @@
       <div class="col-xl-12 col-lg-12 filter-bar">
         
   
-        <nav class="navbar navbar-light bg-faded m-b-10 p-10">
-          <div class="col-sm-4">
-            <button  type="button"
-              class="btn btn-sm btn-primary waves-light m-r-10 ripple" style="font-size:inherit;" (click)="openEditRequestDialog()">
-              <em class="icofont icofont-plus"></em> Add request
-            </button>
-            
-          </div>
-         
-        </nav>
+       
  
 <!--tab ticket-->
 <div class="example-container mat-elevation-z8" >
@@ -177,10 +168,6 @@
       <mat-cell *matCellDef="let ticket"> {{ticket.username}} {{ticket.userfirstname}}</mat-cell>
     </ng-container>
 
-
-
-
-    
     <ng-container matColumnDef="activityName">
       <mat-header-cell *matHeaderCellDef mat-sort-header>Activity</mat-header-cell>
       <mat-cell *matCellDef="let ticket">{{ticket.activityName}}</mat-cell>
@@ -202,24 +189,16 @@
       <mat-cell *matCellDef="let ticket">{{ ticket.dayNumber }}</mat-cell>
   </ng-container>
 
-  <ng-container matColumnDef="type">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
-    <mat-cell *matCellDef="let ticket">{{ ticket.typeValue }}</mat-cell>
-</ng-container>
-
-
-
-    <ng-container matColumnDef="site">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Site</mat-header-cell>
-      <mat-cell *matCellDef="let ticket">{{ ticket.siteLabel }}</mat-cell>
+    <ng-container matColumnDef="halfDay">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Day Time</mat-header-cell>
+      <mat-cell *matCellDef="let ticket">{{ ticket.halfDayLabel }}</mat-cell>
 
     </ng-container>
 
     <ng-container matColumnDef="state">
       <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
-      <mat-cell *matCellDef="let ticket" [ngClass]="getEtatClass(ticket.etatLabel)">{{ ticket.etatLabel }}</mat-cell>
+      <mat-cell *matCellDef="let ticket">{{ ticket.etatLabel }}</mat-cell>
     </ng-container>
-    
 
     <ng-container matColumnDef="buttons">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>

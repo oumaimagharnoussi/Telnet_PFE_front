@@ -13,6 +13,8 @@ import { ActivitieService } from 'app/services/activitie.service';
 import { Groupe } from 'app/models/groupe.model';
 import { Activitie } from 'app/models/Activitie.model';
 import { AuthService } from 'app/services/auth.service';
+import { Site } from 'app/models/site.model';
+import { SiteService } from 'app/services/site.service';
 
 @Component({
   selector: 'app-agent',
@@ -21,20 +23,22 @@ import { AuthService } from 'app/services/auth.service';
 })
 export class AgentComponent implements OnInit {
 
-  displayedColumns: string[] = ['Picture','Name','Email','Activitie','Teams','action'];
+  displayedColumns: string[] = ['Picture','Name','Email','Activitie','Teams','Site','action'];
   userId: number;
   user: User = new User();
   selectedGroup: Groupe;
+  selectedSite:Site;
   selectedActivitie: Activitie;
   activities: any[];
   groups: any[];
+  site:Site;
   @ViewChild(MatPaginator) paginator:MatPaginator;
   @ViewChild(MatSort) sort:MatSort;
 
   dataSource : MatTableDataSource<any>;
 
   constructor(private dialog:MatDialog,private notificationService: NotificationService,private router: Router,
-    @Inject(MAT_DIALOG_DATA) public data:any, private api:ApiService,private groupapi:GroupService,
+    @Inject(MAT_DIALOG_DATA) public data:any, private api:ApiService,private groupapi:GroupService, private siteapi:SiteService,
     private act:ActivitieService, private authservice:AuthService) { }
 
     applyFilter(event:Event) {
@@ -51,12 +55,16 @@ export class AgentComponent implements OnInit {
     const decodedToken = JSON.parse(atob(token.split('.')[1]));
     const userGroupId = decodedToken.Groups;
     this.getGroupById(userGroupId);
-
+    const userSiteId = decodedToken.site;
+    this.getSiteById(userSiteId);
     const userActivitieId = decodedToken.activitie;
     this. getActivitieById(userActivitieId);
   }
  
-
+  getSiteById(telnetId: number) {
+    this.siteapi.getSiteById(telnetId)
+      .subscribe(site => this.selectedSite = site);
+  }
   getGroupById(groupId: number) {
     this.groupapi.getGroupeById(groupId)
       .subscribe(group => this.selectedGroup = group);
@@ -87,6 +95,10 @@ getAllTeams(){
         this.act.getActivitieById(user.activityId).subscribe(activity => {
           user.activity = activity.libelle;
         });
+
+        this.siteapi.getSiteById(user.telnetId).subscribe(site => {
+          user.site = site.libelle;
+        });
       });
       
       this.dataSource = new MatTableDataSource(res);
@@ -114,11 +126,11 @@ deleteteam(userId:number){
   this.api.deleteUser(userId)
   .subscribe({
     next:(res)=>{
-      this.notificationService.success("Team Delete Successfully");
+      this.notificationService.success("User Delete Successfully");
       this.getAllTeams();
     },
     error:()=>{
-      this.notificationService.danger("Error while deleting the team!!")
+      this.notificationService.danger("Error while deleting the user!!")
     }
   })
 

@@ -21,7 +21,6 @@ export class User {
  
   userPassword:string;
   telnetId: number;
- 
 }
 
 

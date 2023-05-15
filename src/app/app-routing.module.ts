@@ -19,14 +19,7 @@ import { TicketsComponent } from './components/Alltickets/dialog/tickets/tickets
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AgentComponent } from './components/agent/agent.component';
 import { DetailComponent } from './components/agent/detail/detail.component';
-import { ChartComponent } from 'angular2-chartjs';
-
-
-
-
-
-
-
+import { ArchiveComponent } from './components/archive/archive.component';
 
 
 const routes: Routes = [
@@ -39,13 +32,10 @@ const routes: Routes = [
   {path: 'users', component: ListUserComponent,canActivate:[AuthGuard]},
   { canActivate: [AuthGuard],path:'ticket',component:TicketComponent},
   {path: 'user-details/:userId', component: DetailComponent},
-
-
-  {path:'dash',component:ChartComponent},
   {path:'Dashboard',component:DefaultComponent},
 
   {path:'agent',component:AgentComponent},
-  
+  {path:'archive',component:ArchiveComponent},
   //test
   {path:'pro',component:Projet1Component},
   {path:'edit',component:EditComponent},
