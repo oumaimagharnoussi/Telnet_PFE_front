@@ -26,6 +26,7 @@ export class TicketService {
     return this.http.get<Commentaire[]>(url);
   }
   
+  
   getTicketList(): Observable<Ticket[]>{
     return this.http.get<Ticket[]>(`${this.baseUrl}`);
   }

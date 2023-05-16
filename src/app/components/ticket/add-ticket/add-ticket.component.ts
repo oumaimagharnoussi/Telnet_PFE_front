@@ -15,6 +15,7 @@ import { TicketService } from 'app/services/ticket.service';
 import { Ticket } from 'app/models/ticket.model';
 import { Etat } from 'app/models/Etat.model';
 import { StateService } from 'app/services/state.service';
+import { forkJoin, Observable } from 'rxjs';
 
 import { Site } from 'app/models/site.model';
 import { SiteService } from 'app/services/site.service';
@@ -144,7 +145,7 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
     public dialog: MatDialogRef<AddTicketComponent>,public apiTicket:TicketService, private apiEtat:StateService,private apiSite:SiteService) {}
 
     ngOnInit(): void {
-      this.getCommentaires();
+     // this.getCommentaires();
       this.api.getGroupes().subscribe((data: Groupe[]) => {
         this.groups = data;
         const supportGroup = data.find(group => group.libelle === 'Support');
@@ -233,9 +234,48 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
           telnetId:this.editData.telnetId,
          
         });
-       }
+        console.log(this.editData.ticketId);
+    this.apiTicket.loadCommentaires(this.editData.ticketId).subscribe(
+      (commentaires) => {
+        // Filter commentaires based on editData.ticketId
+        this.commentaires = commentaires.filter(
+          (commentaire) => commentaire.ticketId === this.editData.ticketId
+        );
+
+        // Load user details for each commentaire
+        this.loadUserDetailsForCommentaires(this.commentaires);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
     }
-  
+
+    loadUserDetailsForCommentaires(commentaires: Commentaire[]): void {
+      const userRequests: Observable<User>[] = [];
+    
+      for (const commentaire of commentaires) {
+        if (commentaire.userId) {
+          const request = this.apiuser.getUserById(commentaire.userId);
+          userRequests.push(request);
+        }
+      }
+    
+      forkJoin(userRequests).subscribe(
+        (users) => {
+          for (let i = 0; i < commentaires.length; i++) {
+            commentaires[i].user = users[i];
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+    
+    
     getUsersByGroupId(groupId: number) {
       this.apiuser.getUsers().subscribe(res => {
         this.user = res.filter(user => user.groupId === groupId);
@@ -480,4 +520,5 @@ getCommentaires() {
     }
   );
 }
+
 }

@@ -129,10 +129,14 @@
                 </button>
               
                 <div *ngFor="let commentaire of commentaires">
-                  <h1>{{ commentaire.libelle }}</h1>
-                  <!--<p>{{ commentaire.user.firstName }} {{ commentaire.user.lastName }} - {{ commentaire.dateCreation | date }}</p>
-    <p>{{ commentaire.libelle }}</p>-->
+                  <p>
+                    <span style="color: #3f629d">{{ commentaire.user.firstName }}</span> 
+                    <span style="color: #3f629d">{{ commentaire.user.lastName }}</span> 
+                    le {{ commentaire.dateCreation | date: 'medium' }}
+                  </p>
+                  <p>{{ commentaire.libelle }}</p>
                 </div>
+                
               </div>
             <div class="row m-t-20">
                 <div class="col-lg-12">
