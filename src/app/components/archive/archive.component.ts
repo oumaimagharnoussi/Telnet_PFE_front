@@ -1,17 +1,13 @@
 import { Component, OnInit, Input, OnDestroy, Injector, Inject, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-
 import { DateTimeService, ExcelService, MailService, NotificationService, SearchFilterService, SortService } from 'app/services/shared';
 import { WorkFromHomeRequest, WorkHomeRequestStatus, WorkHomeRequestStatusLabel } from 'app/models/human-resources/work-from-home';
-import { Groups, HalfDay, Identifier, User } from 'app/models/shared';
-
+import { Groups, HalfDay, Identifier, Type, User } from 'app/models/shared';
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Subject, Subscription, forkJoin, of } from 'rxjs/index';
-
+import { Subject, Subscription, of } from 'rxjs/index';
 import { PaginatorPipe } from 'app/pipes/shared';
-
 import { AuthService } from 'app/services/auth.service';
 import { TicketService } from 'app/services/ticket.service';
 import { Groupe } from 'app/models/groupe.model';
@@ -21,10 +17,11 @@ import { Ticket } from 'app/models/ticket.model';
 import { StateService } from 'app/services/state.service';
 import { ApiService } from 'app/services/api.service';
 import { ActivitieService } from 'app/services/activitie.service';
-import { map, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { Etat } from 'app/models/Etat.model';
 import { GroupService } from 'app/services/group.service';
+import { SiteService } from 'app/services/site.service';
 import { AddTicketComponent } from '../ticket/add-ticket/add-ticket.component';
 @Component({
   selector: 'app-archive',
@@ -34,13 +31,14 @@ import { AddTicketComponent } from '../ticket/add-ticket/add-ticket.component';
 export class ArchiveComponent implements OnInit, OnDestroy {
  
   @Input() workFromHomeRequests: WorkFromHomeRequest[];
-  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber',
-    'halfDay', 'state', 'buttons'];
+  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber','type',
+    'site', 'state', 'buttons'];
     userId: number;
     user: User = new User();
     selectedGroup: Groupe;
     selectedActivitie: Activitie;
     activities: any[];
+    filterValue: string;
    // groups: any[];
     ticket:Ticket;
     @ViewChild(MatPaginator) paginator:MatPaginator;
@@ -56,7 +54,7 @@ export class ArchiveComponent implements OnInit, OnDestroy {
  // displayAddRequestComponentdialogRef: MatDialogRef<AddTicketComponent>;
  groupId: number;
  groups: Groupe[];
-
+ types:Type;
   paginatorPipe: PaginatorPipe;
   dropdownSettings = {};
   dropdownSettingsStatus = {};
@@ -92,7 +90,7 @@ export class ArchiveComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data:any,private dialog: MatDialog,private apistate:StateService,
     private searchFilterService: SearchFilterService,private api:TicketService,private apiuser:ApiService,
     private apiactivitie:ActivitieService, private apiEtat:StateService,
-    private mailService: MailService,private apigroup:GroupService,
+    private mailService: MailService,private apigroup:GroupService, private apisite:SiteService,
     private dateTimeService: DateTimeService,private authservice:AuthService,
     injector: Injector) {
       this.dialog = injector.get<MatDialog>(MatDialog);
@@ -118,6 +116,9 @@ export class ArchiveComponent implements OnInit, OnDestroy {
       const userGroupId = decodedToken.Groups;
       this.getGroupById(userGroupId);
   }
+
+
+  //////////////////////
   getGroupById(groupId: number) {
     this.apigroup.getGroupeById(groupId)
       .subscribe(group => this.selectedGroup = group);
@@ -131,7 +132,12 @@ export class ArchiveComponent implements OnInit, OnDestroy {
     return ticket.etat.libelle !== 'Emis' || (this.selectedGroup && this.selectedGroup.libelle !== 'ressource');
   }
   
- 
+  openEditRequestDialog() {
+    const dialogRef = this.dialog.open(AddTicketComponent,{
+      width:'500px',
+      height:'600px'
+    });
+  }
   getworkFromHomeLabel(state) {
     switch (state) {
       case WorkHomeRequestStatus.InProgress:
@@ -157,6 +163,7 @@ export class ArchiveComponent implements OnInit, OnDestroy {
     this.selectedActivitiesIdentifiers = [];
   }
  
+  
   getAllTickets() {
     this.api.getTickets().subscribe({
       next: (res) => {
@@ -173,7 +180,9 @@ export class ArchiveComponent implements OnInit, OnDestroy {
             })
           );
         };
-  
+        
+
+        
         const getActivitieById = (activityId) => {
           return this.apiactivitie.getActivitieById(activityId);
         };
@@ -191,10 +200,30 @@ export class ArchiveComponent implements OnInit, OnDestroy {
             getActivitieById(user.activityId).subscribe((activitie) => {
               ticket.activityName = activitie.libelle;
             });
+
+            
           });
+
+          const typeObject = this.type.find((obj) => obj.value === ticket.type);
   
-          
-  
+  // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
+  if (typeObject) {
+    ticket.typeValue = typeObject.label;
+  } else {
+    ticket.typeValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
+  }
+
+
+
+  const getSiteById = (telnetId) => {
+    return this.apisite.getSiteById(telnetId);
+  };
+
+  // ...
+
+  getSiteById(ticket.telnetId).subscribe((site) => {
+    ticket.siteLabel = site.libelle;
+  });
           return ticket;
         });
   
@@ -207,8 +236,22 @@ export class ArchiveComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  getEtatClass(etatLabel: string): string {
+    if (etatLabel === 'Emis') {
+      return 'gray-background';
+    } else if (etatLabel === 'Pris en charge') {
+      return 'green-background';
+    } else if (etatLabel === 'Résolu') {
+      return 'bleu-background';
+    } else if (etatLabel === 'Clos') {
+      return 'black-background';
+    } else {
+      return '';
+    }
+  }
   
-  
+
   editticket(ticket:any){
     this.dialog.open(AddTicketComponent,{
       width:'500px',
@@ -234,5 +277,106 @@ export class ArchiveComponent implements OnInit, OnDestroy {
       })
     
     }
+    
 
+
+
+    type = [
+      { value: Type.Assistance_diverse, label: 'Assistance diverse' },
+      { value: Type.impression_locale, label: 'Impression locale' },
+      { value: Type.impression_reseau, label: 'Impression reseau' },
+      { value: Type.Droit_d_acces_initial, label: 'Droit d\'acces initial' },
+      { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
+      { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
+    ];
+    
+
+
+    applyFilter(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    
+      // Filter by ticket.username and ticket.userfirstname
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const usernameMatch = data.ticket.username.trim().toLowerCase().includes(filter);
+        const userFirstNameMatch = data.ticket.userfirstname.trim().toLowerCase().includes(filter);
+        return usernameMatch || userFirstNameMatch;
+      };
+    
+      this.dataSource.filter = filterValue;
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    
+    applyFiltersite(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.siteLabel.trim().toLowerCase().indexOf(filter) !== -1;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    applyFilterActivity(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    
+      // Filter by ticket.activityName
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.ticket.activityName.trim().toLowerCase().includes(filter);
+      };
+    
+      this.dataSource.filter = filterValue;
+    
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    
+    applyFiltertype(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.typeValue.trim().toLowerCase().indexOf(filter) !== -1;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+      
+    }
+    
+       
+    
+    applyFilterState(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.etatLabel.trim().toLowerCase().indexOf(filter) !== -1;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    applyFilterDateRange() {
+      this.dataSource.filterPredicate = (data: any) => {
+        const startDate = new Date(this.fromDate);
+        const endDate = new Date(this.toDate);
+        const ticketStartDate = new Date(data.startDate);
+        const ticketEndDate = new Date(data.endDate);
+        return ticketStartDate >= startDate && ticketEndDate <= endDate;
+      };
+      this.dataSource.filter = 'applyFilter';
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    resetFilter() {
+      this.fromDate = null;
+      this.toDate = null;
+      this.applyFilterDateRange();
+      this.getAllTickets();
+    }
+     
+    
 }

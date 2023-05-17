@@ -44,6 +44,7 @@ export class TicketComponent implements OnInit, OnDestroy {
     selectedGroup: Groupe;
     selectedActivitie: Activitie;
     activities: any[];
+    filterValue: string;
    // groups: any[];
     ticket:Ticket;
     @ViewChild(MatPaginator) paginator:MatPaginator;
@@ -294,5 +295,94 @@ export class TicketComponent implements OnInit, OnDestroy {
       { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
       { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
     ];
+    
+
+
+    applyFilter(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    
+      // Filter by ticket.username and ticket.userfirstname
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const usernameMatch = data.ticket.username.trim().toLowerCase().includes(filter);
+        const userFirstNameMatch = data.ticket.userfirstname.trim().toLowerCase().includes(filter);
+        return usernameMatch || userFirstNameMatch;
+      };
+    
+      this.dataSource.filter = filterValue;
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    
+    applyFiltersite(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.siteLabel.trim().toLowerCase().indexOf(filter) !== -1;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    applyFilterActivity(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    
+      // Filter by ticket.activityName
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.ticket.activityName.trim().toLowerCase().includes(filter);
+      };
+    
+      this.dataSource.filter = filterValue;
+    
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    
+    applyFiltertype(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.typeValue.trim().toLowerCase().indexOf(filter) !== -1;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+      
+    }
+    
+       
+    
+    applyFilterState(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value;
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        return data.etatLabel.trim().toLowerCase().indexOf(filter) !== -1;
+      };
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    applyFilterDateRange() {
+      this.dataSource.filterPredicate = (data: any) => {
+        const startDate = new Date(this.fromDate);
+        const endDate = new Date(this.toDate);
+        const ticketStartDate = new Date(data.startDate);
+        const ticketEndDate = new Date(data.endDate);
+        return ticketStartDate >= startDate && ticketEndDate <= endDate;
+      };
+      this.dataSource.filter = 'applyFilter';
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+    resetFilter() {
+      this.fromDate = null;
+      this.toDate = null;
+      this.applyFilterDateRange();
+      this.getAllTickets();
+    }
+     
     
 }

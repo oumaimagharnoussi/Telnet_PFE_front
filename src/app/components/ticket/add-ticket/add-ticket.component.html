@@ -127,15 +127,18 @@
                 <button type="button" class="btn btn-sm btn-primary waves-light m-r-10 ripple" style="font-size: inherit;" (click)="addComment()">
                   <em class="icofont icofont-plus"></em> Add Comment
                 </button>
+              <br>
               
                 <div *ngFor="let commentaire of commentaires">
                   <p>
-                    <span style="color: #3f629d">{{ commentaire.user.firstName }}</span> 
-                    <span style="color: #3f629d">{{ commentaire.user.lastName }}</span> 
+                    <span style="color: #3f629d">{{ commentaire.user.firstName }} </span> 
+<span style="color: #3f629d">{{ commentaire.user.lastName }}</span>
+
                     le {{ commentaire.dateCreation | date: 'medium' }}
                   </p>
                   <p>{{ commentaire.libelle }}</p>
                 </div>
+                
                 
               </div>
             <div class="row m-t-20">

@@ -14,134 +14,80 @@
               <mat-list>
                 <mat-list-item>
                   <h3 class="mat-subheader col-sm-2">Period</h3>
-                  <mat-form-field class="date-field col-sm-5">
-                    <input matInput [matDatepicker]="picker110" placeholder="From" [max]="toDate"
-                       [(ngModel)]="fromDate" >
-                    <mat-datepicker-toggle matSuffix [for]="picker110"></mat-datepicker-toggle>
-                    <mat-datepicker #picker110></mat-datepicker>
-                  </mat-form-field>
-                  <mat-form-field class="date-field col-sm-5">
-                    <input matInput [matDatepicker]="picker220" placeholder="To" [min]="fromDate"
-                       [(ngModel)]="toDate" >
-                    <mat-datepicker-toggle matSuffix [for]="picker220"></mat-datepicker-toggle>
-                    <mat-datepicker #picker220></mat-datepicker>
-                  </mat-form-field>
-                </mat-list-item>
-                <mat-list-item>
-                  <h3 class="mat-subheader col-sm-2" [hidden]="forbiddenActivityResource">Resource</h3>
-                  <mat-form-field class="search-input col-sm-7" [hidden]="forbiddenActivityResource">
-                    <input placeholder="Search here..." matInput name="searchInput" [(ngModel)]="resourceName"
-                    
-                       />
-                  </mat-form-field>
-                  <mat-list-item>
+<mat-form-field class="date-field col-sm-5">
+  <input matInput [matDatepicker]="picker110" placeholder="From" [max]="toDate" [(ngModel)]="fromDate">
+  <mat-datepicker-toggle matSuffix [for]="picker110"></mat-datepicker-toggle>
+  <mat-datepicker #picker110></mat-datepicker>
+</mat-form-field>
+<mat-form-field class="date-field col-sm-5">
+  <input matInput [matDatepicker]="picker220" placeholder="To" [min]="fromDate" [(ngModel)]="toDate">
+  <mat-datepicker-toggle matSuffix [for]="picker220"></mat-datepicker-toggle>
+  <mat-datepicker #picker220></mat-datepicker>
+</mat-form-field>
+
+
+
                   <h3 class="mat-subheader col-sm-2">Resource</h3>
-                  <mat-form-field class="search-input col-sm-7">
-                    <input placeholder="Search here..." matInput name="searchInput" 
-                       />
-                  </mat-form-field>
-                </mat-list-item>
-                  
-                </mat-list-item>
-              </mat-list>
-            </div>
-            <div class="col-xl-4 col-lg-12">
-              <mat-list>
-                <mat-list-item>
+                  <div class="col-sm-10">
+                    <mat-form-field class="search-input col-sm-7">
+                      <input placeholder="Search here..." matInput name="searchInput"  (input)="applyFilter($event)" />
+                    </mat-form-field>
+                  </div>
                   <h3 class="mat-subheader col-sm-2">Activity</h3>
                   <div class="col-sm-10">
-                   
+                    <mat-form-field class="search-input col-sm-7">
+                      <input placeholder="Search activity..." matInput name="activitySearchInput" (input)="applyFilterActivity($event)" />
+                    </mat-form-field>
                   </div>
                 </mat-list-item>
-              </mat-list>
-            </div>
-            <div class="col-xl-3 col-lg-12">
-              <mat-list>
-                <mat-list-item>
-                  <h3 class="mat-subheader col-sm-2">Status</h3>
+              <mat-list-item>
+                  <h3 class="mat-subheader col-sm-2">Type</h3>
                   <div class="col-sm-10">
-                    
-                  </div>
-                </mat-list-item>
+                  <mat-form-field class="search-input col-sm-7">
+                    <input placeholder="Search type..." matInput name="typeSearchInput" (input)="applyFiltertype($event)" />
+                  </mat-form-field>
+                </div>
+                  <!-- site -->
+              
+              
+              <!-- Ajout du champ de recherche par site -->
+              
+              <h3 class="mat-subheader col-sm-2">Site</h3>
+              <div class="col-sm-10">
+                <mat-form-field class="search-input col-sm-7">
+                  <input placeholder="Search site..." matInput name="siteSearchInput" (input)="applyFiltersite($event)" />
+                </mat-form-field>
+              </div>
+             
+              
+            
+              <h3 class="mat-subheader col-sm-2">State</h3>
+              <div class="col-sm-10">
+                <mat-form-field class="search-input col-sm-7">
+                  <input placeholder="Search state..." matInput  (input)="applyFilterState($event)" />
+                </mat-form-field>
+              </div>
+               <!-- ... -->
+               <div class="col-xl-1 col-lg-12">
+                <div class="text-center">
+                  <button class="btn btn-md btn-primary ripple m-t-5" mat-button (click)="applyFilterDateRange()">Search</button>
+                </div>
+                <div class="text-center">
+                  <button class="btn btn-md btn-default ripple m-t-5 custom-button" (click)="resetFilter()">Reset</button>
+                </div>
                 
+                
+                </div>
+                </mat-list-item>
               </mat-list>
+              
             </div>
-            <div class="col-xl-1 col-lg-12">
-              <div class="text-center">
-                <button 
-                  class="btn btn-md btn-primary ripple m-t-5">Search</button>
-              </div>
-              <div class="text-center">
-                <button  class="btn btn-md btn-default ripple light m-t-10">Reset</button>
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>
 
-      
-      
-      <div *ngIf="lengthWorkFromHomeRequests === 0">
-        <h1>No Result Found</h1>
-      </div>
-      <div class="wrapper">
-        <div class="overlay" *ngIf="isLoading">
-          <div class="spinner-wrapper">
-            <div class="container">
-              <div class="row">
-                <div id="loader">
-                  <mat-spinner></mat-spinner>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="listView" class="loaded-content" [class.blurred]="isLoading">
-          <app-work-from-home-request-table
-            [workFromHomeRequests]="workFromHomeRequests | paginator:searchFilterService.pageIndex:searchFilterService.pageSize">
-          </app-work-from-home-request-table>
-        </div>
-      </div>
-     
-      <div *ngIf="lengthWorkFromHomeRequests === 0">
-        <h1>No Result Found</h1>
-      </div>
-      <div class="wrapper">
-        <div class="overlay" *ngIf="isLoading">
-          <div class="spinner-wrapper">
-            <div class="container">
-              <div class="row">
-                <div id="loader">
-                  <mat-spinner></mat-spinner>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div *ngIf="listView" class="loaded-content" [class.blurred]="isLoading">
-          <app-work-from-home-request-table
-            [workFromHomeRequests]="workFromHomeRequests | paginator:searchFilterService.pageIndex:searchFilterService.pageSize">
-          </app-work-from-home-request-table>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-
-
-
-
-
-
-
-
-<!-- Filtre -->
-<div class="page-body">
-    <div class="row">
-      <div class="col-xl-12 col-lg-12 filter-bar">
-        
-  
         <nav class="navbar navbar-light bg-faded m-b-10 p-10">
           <div class="col-sm-4">
             <button  type="button"
@@ -205,7 +151,7 @@
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
     <mat-cell *matCellDef="let ticket">{{ ticket.typeValue }}</mat-cell>
-</ng-container>
+  </ng-container>
 
 
 
@@ -252,4 +198,4 @@
     aria-label="Select page of periodic ticket">
   </mat-paginator>
 </div>
-</div></div></div></main>
+</div></div></div>
