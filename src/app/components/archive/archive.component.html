@@ -149,12 +149,11 @@
 
     </ng-container>
 
-    <ng-container matColumnDef="state">
+   <ng-container matColumnDef="state">
       <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
       <mat-cell *matCellDef="let ticket" [ngClass]="getEtatClass(ticket.etatLabel)">{{ ticket.etatLabel }}</mat-cell>
     </ng-container>
     
-
     <ng-container matColumnDef="buttons">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let ticket">

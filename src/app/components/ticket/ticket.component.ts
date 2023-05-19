@@ -35,32 +35,41 @@ import { SiteService } from 'app/services/site.service';
   styleUrls: ['./ticket.component.scss']
 })
 export class TicketComponent implements OnInit, OnDestroy {
- 
+
   @Input() workFromHomeRequests: WorkFromHomeRequest[];
-  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber','type',
+  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber', 'type',
     'site', 'state', 'buttons'];
-    userId: number;
-    user: User = new User();
-    selectedGroup: Groupe;
-    selectedActivitie: Activitie;
-    activities: any[];
-    filterValue: string;
-   // groups: any[];
-    ticket:Ticket;
-    @ViewChild(MatPaginator) paginator:MatPaginator;
-    @ViewChild(MatSort) sort:MatSort;
-    productForm: FormGroup;
-    dataSource : MatTableDataSource<any>;
-    public isHalfDayChecked: boolean;
+  userId: number;
+  user: User = new User();
+  selectedGroup: Groupe;
+  selectedActivitie: Activitie;
+  activities: any[];
+  filterValue: string;
+  // groups: any[];
+  ticket: Ticket;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  productForm: FormGroup;
+  dataSource: MatTableDataSource<any>;
+  public isHalfDayChecked: boolean;
   currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
   forbiddenRejectValidate = true;
   listView = false;
   selectedWorkHomeRequestId: number;
   subscription: Subscription;
- // displayAddRequestComponentdialogRef: MatDialogRef<AddTicketComponent>;
- groupId: number;
- groups: Groupe[];
- types:Type;
+  // displayAddRequestComponentdialogRef: MatDialogRef<AddTicketComponent>;
+  public userName: string;
+public lastName: string;
+public email: string;
+public userNumber:string;
+
+public Activitie:string;
+public firstName:string;
+public picture: string = null;
+public telnetId:number;
+  groupId: number;
+  groups: Groupe[];
+  types: Type;
   paginatorPipe: PaginatorPipe;
   dropdownSettings = {};
   dropdownSettingsStatus = {};
@@ -72,35 +81,35 @@ export class TicketComponent implements OnInit, OnDestroy {
   selectedStatusesIdentifiers: Identifier[] = [];
   selectedStatusesIds: string;
   etats: Etat[];
-  
+
   fromDate: Date;
   toDate: Date;
- 
+
   lengthWorkFromHomeRequests: number;
-  
+
   emptyResult: boolean;
   isLoading = false;
 
- 
+
   refreshSubscription: Subscription;
   destroyed = new Subject();
   forbiddenActivityResource = true;
   onlyMySubordinates = true;
 
   sortService: SortService;
-  
+
   excelService: ExcelService;
   activitie: Activitie;
- 
-  constructor(private notificationService: NotificationService,private router: Router,private auth:AuthService,
-    @Inject(MAT_DIALOG_DATA) public data:any,private dialog: MatDialog,private apistate:StateService,
-    private searchFilterService: SearchFilterService,private api:TicketService,private apiuser:ApiService,
-    private apiactivitie:ActivitieService, private apiEtat:StateService,
-    private mailService: MailService,private apigroup:GroupService, private apisite:SiteService,
-    private dateTimeService: DateTimeService,private authservice:AuthService,
+
+  constructor(private notificationService: NotificationService, private router: Router, private auth: AuthService,
+    @Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialog, private apistate: StateService,
+    private searchFilterService: SearchFilterService, private api: TicketService, private apiuser: ApiService,
+    private apiactivitie: ActivitieService, private apiEtat: StateService,
+    private mailService: MailService, private apigroup: GroupService, private apisite: SiteService,
+    private dateTimeService: DateTimeService, private authservice: AuthService,
     injector: Injector) {
-      this.dialog = injector.get<MatDialog>(MatDialog);
-    }
+    this.dialog = injector.get<MatDialog>(MatDialog);
+  }
   ngOnDestroy(): void {
     throw new Error('Method not implemented.');
   }
@@ -114,13 +123,27 @@ export class TicketComponent implements OnInit, OnDestroy {
     });
 
     const token = this.authservice.getToken();
-      const decodedToken = JSON.parse(atob(token.split('.')[1]));
-     
-      this.groupId = decodedToken.Groups;
-     
-      this.userId = decodedToken.userId;
-      const userGroupId = decodedToken.Groups;
-      this.getGroupById(userGroupId);
+    const decodedToken = JSON.parse(atob(token.split('.')[1]));
+    this.userName = decodedToken.name;
+    this.lastName = decodedToken.lastname;
+    this.email = decodedToken.email;
+    this.userNumber = decodedToken.usernumber;
+    this.Activitie = decodedToken.activitie;
+   
+    this.firstName = decodedToken.firstname;
+    this.picture = decodedToken.pictureUrl;
+    
+    this.telnetId= decodedToken.site
+    this.groupId = decodedToken.Groups;
+
+    this.userId = decodedToken.userId;
+    const userGroupId = decodedToken.Groups;
+    this.getGroupById(userGroupId);
+
+
+    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
+    currentUser.userId = this.userId;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
   }
 
 
@@ -134,14 +157,14 @@ export class TicketComponent implements OnInit, OnDestroy {
     const decodedToken = JSON.parse(atob(token.split('.')[1]));
     const userGroupId = decodedToken.Groups;
     this.getGroupById(userGroupId);
-  
+
     return ticket.etat.libelle !== 'Emis' || (this.selectedGroup && this.selectedGroup.libelle !== 'ressource');
   }
-  
+
   openEditRequestDialog() {
-    const dialogRef = this.dialog.open(AddTicketComponent,{
-      width:'500px',
-      height:'600px'
+    const dialogRef = this.dialog.open(AddTicketComponent, {
+      width: '500px',
+      height: '600px'
     });
   }
   getworkFromHomeLabel(state) {
@@ -168,71 +191,71 @@ export class TicketComponent implements OnInit, OnDestroy {
     this.selectedStatusesIdentifiers = [];
     this.selectedActivitiesIdentifiers = [];
   }
- 
-  
+
+
   getAllTickets() {
     this.api.getTickets().subscribe({
       next: (res) => {
         const users = {};
-  
+
         const getUserById = (userId) => {
           if (users[userId]) {
             return of(users[userId]);
           }
-  
+
           return this.apiuser.getUserById(userId).pipe(
             tap((user) => {
               users[userId] = user;
             })
           );
         };
-        
 
-        
+
+
         const getActivitieById = (activityId) => {
           return this.apiactivitie.getActivitieById(activityId);
         };
-  
+
         const mappedResults = res.map((ticket) => {
           this.apistate.getEtatById(ticket.id).subscribe((etat) => {
             ticket.etatLabel = etat.libelle;
           });
-  
+
           getUserById(ticket.userId).subscribe((user) => {
             ticket.userUserNumber = user.userNumber;
             ticket.username = user.firstName;
             ticket.userfirstname = user.lastName;
-  
+
             getActivitieById(user.activityId).subscribe((activitie) => {
               ticket.activityName = activitie.libelle;
             });
 
-            
+
           });
 
           const typeObject = this.type.find((obj) => obj.value === ticket.type);
-  
-  // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
-  if (typeObject) {
-    ticket.typeValue = typeObject.label;
-  } else {
-    ticket.typeValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
-  }
+
+          // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
+          if (typeObject) {
+            ticket.typeValue = typeObject.label;
+          } else {
+            ticket.typeValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
+          }
 
 
 
-  const getSiteById = (telnetId) => {
-    return this.apisite.getSiteById(telnetId);
-  };
+          const getSiteById = (telnetId) => {
+            return this.apisite.getSiteById(telnetId);
+          };
 
-  // ...
+          // ...
 
-  getSiteById(ticket.telnetId).subscribe((site) => {
-    ticket.siteLabel = site.libelle;
-  });
+          getSiteById(ticket.telnetId).subscribe((site) => {
+            ticket.siteLabel = site.libelle;
+          });
           return ticket;
         });
-  
+
         this.dataSource = new MatTableDataSource(mappedResults);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -256,133 +279,134 @@ export class TicketComponent implements OnInit, OnDestroy {
       return '';
     }
   }
-  
 
-  editticket(ticket:any){
-    this.dialog.open(AddTicketComponent,{
-      width:'500px',
-      height:'600px',
-      data:ticket
-    }).afterClosed().subscribe(val=>{
-      if(val==='update'){
+
+  editticket(ticket: any) {
+    this.dialog.open(AddTicketComponent, {
+      width: '500px',
+      height: '600px',
+      data: ticket
+    }).afterClosed().subscribe(val => {
+      if (val === 'update') {
         this.getAllTickets();
       }
     })
-    } 
+  }
 
-    deleteticket(ticketId:number){
-      this.api.deleteTicket(ticketId)
+  deleteticket(ticketId: number) {
+    this.api.deleteTicket(ticketId)
       .subscribe({
-        next:(res)=>{
-          this.notificationService.success("Ticket Delete Successfully");
+        next: (res) => {
+          this.notificationService.success('This Ticket is Deleted');
+         // this.mailService.ticketDeleted(ticket);
           this.getAllTickets();
         },
-        error:()=>{
-          this.notificationService.danger("Error while deleting the ticket !!")
+        error: () => {
+          this.notificationService.danger('Delete Ticket failed')
         }
       })
-    
-    }
-    
+
+  }
 
 
 
-    type = [
-      { value: Type.Assistance_diverse, label: 'Assistance diverse' },
-      { value: Type.impression_locale, label: 'Impression locale' },
-      { value: Type.impression_reseau, label: 'Impression reseau' },
-      { value: Type.Droit_d_acces_initial, label: 'Droit d\'acces initial' },
-      { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
-      { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
-    ];
-    
+
+  type = [
+    { value: Type.Assistance_diverse, label: 'Assistance diverse' },
+    { value: Type.impression_locale, label: 'Impression locale' },
+    { value: Type.impression_reseau, label: 'Impression reseau' },
+    { value: Type.Droit_d_acces_initial, label: 'Droit d\'acces initial' },
+    { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
+    { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
+  ];
 
 
-    applyFilter(event: Event) {
-      const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    
-      // Filter by ticket.username and ticket.userfirstname
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const usernameMatch = data.ticket.username.trim().toLowerCase().includes(filter);
-        const userFirstNameMatch = data.ticket.userfirstname.trim().toLowerCase().includes(filter);
-        return usernameMatch || userFirstNameMatch;
-      };
-    
-      this.dataSource.filter = filterValue;
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    // Filter by ticket.username and ticket.userfirstname
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const usernameMatch = data.ticket.username.trim().toLowerCase().includes(filter);
+      const userFirstNameMatch = data.ticket.userfirstname.trim().toLowerCase().includes(filter);
+      return usernameMatch || userFirstNameMatch;
+    };
+
+    this.dataSource.filter = filterValue;
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    
-    applyFiltersite(event: Event) {
-      const filterValue = (event.target as HTMLInputElement).value;
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        return data.siteLabel.trim().toLowerCase().indexOf(filter) !== -1;
-      };
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
+  }
+
+  applyFiltersite(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      return data.siteLabel.trim().toLowerCase().indexOf(filter) !== -1;
+    };
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    applyFilterActivity(event: Event) {
-      const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    
-      // Filter by ticket.activityName
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        return data.ticket.activityName.trim().toLowerCase().includes(filter);
-      };
-    
-      this.dataSource.filter = filterValue;
-    
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
+  }
+  applyFilterActivity(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    // Filter by ticket.activityName
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      return data.ticket.activityName.trim().toLowerCase().includes(filter);
+    };
+
+    this.dataSource.filter = filterValue;
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    
-    applyFiltertype(event: Event) {
-      const filterValue = (event.target as HTMLInputElement).value;
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        return data.typeValue.trim().toLowerCase().indexOf(filter) !== -1;
-      };
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-    
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
-      
+  }
+
+  applyFiltertype(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      return data.typeValue.trim().toLowerCase().indexOf(filter) !== -1;
+    };
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    
-       
-    
-    applyFilterState(event: Event) {
-      const filterValue = (event.target as HTMLInputElement).value;
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        return data.etatLabel.trim().toLowerCase().indexOf(filter) !== -1;
-      };
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
+
+  }
+
+
+
+  applyFilterState(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      return data.etatLabel.trim().toLowerCase().indexOf(filter) !== -1;
+    };
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    applyFilterDateRange() {
-      this.dataSource.filterPredicate = (data: any) => {
-        const startDate = new Date(this.fromDate);
-        const endDate = new Date(this.toDate);
-        const ticketStartDate = new Date(data.startDate);
-        const ticketEndDate = new Date(data.endDate);
-        return ticketStartDate >= startDate && ticketEndDate <= endDate;
-      };
-      this.dataSource.filter = 'applyFilter';
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
+  }
+  applyFilterDateRange() {
+    this.dataSource.filterPredicate = (data: any) => {
+      const startDate = new Date(this.fromDate);
+      const endDate = new Date(this.toDate);
+      const ticketStartDate = new Date(data.startDate);
+      const ticketEndDate = new Date(data.endDate);
+      return ticketStartDate >= startDate && ticketEndDate <= endDate;
+    };
+    this.dataSource.filter = 'applyFilter';
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    resetFilter() {
-      this.fromDate = null;
-      this.toDate = null;
-      this.applyFilterDateRange();
-      this.getAllTickets();
-    }
-     
-    
+  }
+  resetFilter() {
+    this.fromDate = null;
+    this.toDate = null;
+    this.applyFilterDateRange();
+    this.getAllTickets();
+  }
+
+
 }

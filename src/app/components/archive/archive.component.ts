@@ -6,7 +6,7 @@ import { WorkFromHomeRequest, WorkHomeRequestStatus, WorkHomeRequestStatusLabel 
 import { Groups, HalfDay, Identifier, Type, User } from 'app/models/shared';
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Subject, Subscription, of } from 'rxjs/index';
+import { Subject, Subscription, forkJoin, of } from 'rxjs/index';
 import { PaginatorPipe } from 'app/pipes/shared';
 import { AuthService } from 'app/services/auth.service';
 import { TicketService } from 'app/services/ticket.service';
@@ -17,7 +17,7 @@ import { Ticket } from 'app/models/ticket.model';
 import { StateService } from 'app/services/state.service';
 import { ApiService } from 'app/services/api.service';
 import { ActivitieService } from 'app/services/activitie.service';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { Etat } from 'app/models/Etat.model';
 import { GroupService } from 'app/services/group.service';
@@ -162,81 +162,83 @@ export class ArchiveComponent implements OnInit, OnDestroy {
     this.selectedStatusesIdentifiers = [];
     this.selectedActivitiesIdentifiers = [];
   }
- 
-  
   getAllTickets() {
     this.api.getTickets().subscribe({
       next: (res) => {
         const users = {};
+        const mappedResults = res.map((ticket) => {
+          return this.apistate.getEtatById(ticket.id).pipe(
+            switchMap((etat) => {
+              ticket.etatLabel = etat.libelle;
   
-        const getUserById = (userId) => {
-          if (users[userId]) {
-            return of(users[userId]);
-          }
+              if (ticket.etat && ticket.etat.libelle === "Clos") {
+                // Only process tickets with etat.libelle = "Clos"
   
-          return this.apiuser.getUserById(userId).pipe(
-            tap((user) => {
-              users[userId] = user;
+                const getUserById = (userId) => {
+                  if (users[userId]) {
+                    return of(users[userId]);
+                  }
+  
+                  return this.apiuser.getUserById(userId).pipe(
+                    tap((user) => {
+                      users[userId] = user;
+                    })
+                  );
+                };
+  
+                const getActivitieById = (activityId) => {
+                  return this.apiactivitie.getActivitieById(activityId);
+                };
+  
+                getUserById(ticket.userId).subscribe((user) => {
+                  ticket.userUserNumber = user.userNumber;
+                  ticket.username = user.firstName;
+                  ticket.userfirstname = user.lastName;
+  
+                  getActivitieById(user.activityId).subscribe((activitie) => {
+                    ticket.activityName = activitie.libelle;
+                  });
+                });
+  
+                const typeObject = this.type.find((obj) => obj.value === ticket.type);
+  
+                // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
+                if (typeObject) {
+                  ticket.typeValue = typeObject.label;
+                } else {
+                  ticket.typeValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
+                }
+  
+                const getSiteById = (telnetId) => {
+                  return this.apisite.getSiteById(telnetId);
+                };
+  
+                getSiteById(ticket.telnetId).subscribe((site) => {
+                  ticket.siteLabel = site.libelle;
+                });
+  
+                return ticket;
+              } else {
+                return null;
+              }
             })
           );
-        };
-        
-
-        
-        const getActivitieById = (activityId) => {
-          return this.apiactivitie.getActivitieById(activityId);
-        };
-  
-        const mappedResults = res.map((ticket) => {
-          this.apistate.getEtatById(ticket.id).subscribe((etat) => {
-            ticket.etatLabel = etat.libelle;
-          });
-  
-          getUserById(ticket.userId).subscribe((user) => {
-            ticket.userUserNumber = user.userNumber;
-            ticket.username = user.firstName;
-            ticket.userfirstname = user.lastName;
-  
-            getActivitieById(user.activityId).subscribe((activitie) => {
-              ticket.activityName = activitie.libelle;
-            });
-
-            
-          });
-
-          const typeObject = this.type.find((obj) => obj.value === ticket.type);
-  
-  // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
-  if (typeObject) {
-    ticket.typeValue = typeObject.label;
-  } else {
-    ticket.typeValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
-  }
-
-
-
-  const getSiteById = (telnetId) => {
-    return this.apisite.getSiteById(telnetId);
-  };
-
-  // ...
-
-  getSiteById(ticket.telnetId).subscribe((site) => {
-    ticket.siteLabel = site.libelle;
-  });
-          return ticket;
         });
   
-        this.dataSource = new MatTableDataSource(mappedResults);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        forkJoin(mappedResults).subscribe((filteredResults) => {
+          // Filter out null values
+          const validResults = filteredResults.filter((result) => result !== null);
+  
+          this.dataSource = new MatTableDataSource(validResults);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        });
       },
       error: (err) => {
         this.notificationService.danger("Error while fetching the records!!");
       }
     });
   }
-
   getEtatClass(etatLabel: string): string {
     if (etatLabel === 'Emis') {
       return 'gray-background';

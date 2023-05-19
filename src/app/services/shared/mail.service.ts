@@ -5,6 +5,8 @@ import { DateTimeService } from './date-time.service';
 import { User, MessageParameter, Message, Activities } from 'app/models/shared';
 import { WorkFromHomeRequest, WorkHomeRequestStatus } from 'app/models/human-resources/work-from-home';
 import { WorkFromHomeService } from '../human-resources/work-from-home';
+import { Ticket } from 'app/models/ticket.model';
+import { ApiService } from '../api.service';
 
 @Injectable()
 export class MailService {
@@ -14,7 +16,7 @@ export class MailService {
         private httpClient: HttpClient,
         private coreDataService: CoreDataService,
         private dateTimeService: DateTimeService,
-        private workFromHomeService: WorkFromHomeService
+        private workFromHomeService: WorkFromHomeService, private api: ApiService
     ) {
         this.headers = new HttpHeaders({ 'Content-Type': 'application/json; charset=utf-8' });
     }
@@ -61,6 +63,38 @@ export class MailService {
             });
     }
 
+    ticketDeleted(ticket: Ticket) {
+        const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
+       /* let workFromHomeLink = window.location.href;
+        if (workFromHomeLink.indexOf(';') > -1) {
+            workFromHomeLink = workFromHomeLink.slice(0, workFromHomeLink.indexOf(';') + 1);
+        }*/
+        this.api.getUsers().subscribe(
+            workFromHomeUser => {
+                const workFromHomeResource = Object.assign(new User, workFromHomeUser[0]);
+                this.workFromHomeService.getReportingsTo(ticket.userId).subscribe(
+                    reportingsTo => {
+                        const reportingsToUsers = [];
+                        reportingsTo.forEach(user => {
+                            reportingsToUsers.push(Object.assign(new User(), user));
+                        });
+                        const message: Message = new Message();
+                        message.subject = 'Work From Home Request Deleted';
+                        message.from = currentUser.email;
+                        message.to = workFromHomeResource.email + ',' + reportingsToUsers.map(user => user.email).join(',') + ',' + 'GroupSupport';
+                        message.cc = currentUser.email;
+                        message.body = 'Tickets.TicketDeleted';
+                        message.messageParameters = new Array<MessageParameter>();
+                        message.messageParameters.push(new MessageParameter('UserName', currentUser.userName));
+                        message.messageParameters.push(new MessageParameter('UserFullName', ticket.user.firstName));                   
+                        message.messageParameters.push(new MessageParameter('Priority', ticket.priorite.toString()));
+                        message.messageParameters.push(new MessageParameter('Type', ticket.type.toString()));
+                        message.messageParameters.push(new MessageParameter('Delai', ticket.halfDay.toString()));
+                        this.send(message).subscribe();
+                    });
+            });
+    }
+
     workFromHomeRequestRejected(workFromHomeRequest: WorkFromHomeRequest) {
         const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
         let workFromHomeLink = window.location.href;
@@ -83,7 +117,7 @@ export class MailService {
                         message.to = workFromHomeRequest.state !== WorkHomeRequestStatus.InProgress ?
                             message.to + ',' + 'GroupSupport' : message.to;
                         message.cc = currentUser.email;
-                        message.body = 'HumanResources.WorkFromHomeRequestRejected';
+                        message.body = 'HumanResources.WorkFromHomeRequestRejected';//dosier de email body
                         message.messageParameters = new Array<MessageParameter>();
                         message.messageParameters.push(new MessageParameter('UserName', currentUser.userName));
                         message.messageParameters.push(new MessageParameter('UserFullName', workFromHomeRequest.userFullName));
@@ -212,4 +246,3 @@ export class MailService {
             });
     }
 }
-
