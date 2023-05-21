@@ -92,6 +92,7 @@
     "ngx-perfect-scrollbar": "^7.2.1",
     "node-sass": "^4.14.1",
     "npm": "^7.5.6",
+    "powerbi-client": "^2.22.3",
     "rxjs": "^6.6.7",
     "screenfull": "^3.3.3",
     "set-value": "^4.1.0",

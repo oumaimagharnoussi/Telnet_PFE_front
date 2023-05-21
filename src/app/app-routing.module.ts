@@ -20,6 +20,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { AgentComponent } from './components/agent/agent.component';
 import { DetailComponent } from './components/agent/detail/detail.component';
 import { ArchiveComponent } from './components/archive/archive.component';
+import { DashComponent } from './components/dash/dash.component';
 
 
 const routes: Routes = [
@@ -36,6 +37,7 @@ const routes: Routes = [
 
   {path:'agent',component:AgentComponent},
   {path:'archive',component:ArchiveComponent},
+  {path:'dash',component:DashComponent},
   //test
   {path:'pro',component:Projet1Component},
   {path:'edit',component:EditComponent},
