@@ -83,22 +83,22 @@ export enum Priorite
     }
 
 export enum Type {
-    Assistance_diverse,
-    impression_locale,
-    impression_reseau,
-    Droit_d_acces_initial,
-    Droit_d_acces_changement,
-    Droit_d_acces_revue
+        Diversified_aid,
+        Local_printing,
+        Network_printing,
+        Initial_right_of_access,
+        Right_of_access_change,
+        Right_of_access_reviewed
   }    
 
 
 
 
   export enum HalfDay {
-    DesQuePossible = 1,
-    DansLHeureQuiSuit = 2,
-    DansLaDemiJournee = 3,
-    Dans1Jour = 4,
-    Dans2Jours = 5,
-    DansLaSemaine = 6
+    AsSoonAsPossible = 1,
+InTheNextHour = 2,
+InAHalfDay = 3,
+In1Day = 4,
+In2Days = 5,
+InAWeek = 6
   }

@@ -12,8 +12,6 @@ import { ListUserComponent } from './components/user/list-user/list-user.compone
 import { ProfileComponent } from './components/user/profile/profile.component';
 import { WorkFromHomeRequestTableComponent } from './components/human-resources/work-from-home/work-from-home-request/work-from-home-request-table/work-from-home-request-table.component';
 import { TicketComponent } from './components/ticket/ticket.component';
-
-import { Projet1Component } from './components/test/projet1/projet1.component';
 import { EditComponent } from './components/test/edit/edit.component';
 import { TicketsComponent } from './components/Alltickets/dialog/tickets/tickets.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -28,21 +26,15 @@ const routes: Routes = [
   {path:'login', component: LoginComponent},
   {path:'reset', component: ResetPasswordComponent},
   {path:'change', component: ChangePasswordComponent},
-  {path:'profile', component: ProfileComponent},
+  {canActivate: [AuthGuard],path:'profile', component: ProfileComponent},
   {path:'nav', component: NavbarComponent},
-  {path: 'users', component: ListUserComponent,canActivate:[AuthGuard]},
+  {canActivate: [AuthGuard],path: 'users', component: ListUserComponent},
   { canActivate: [AuthGuard],path:'ticket',component:TicketComponent},
   {path: 'user-details/:userId', component: DetailComponent},
-  {path:'Dashboard',component:DefaultComponent},
-
-  {path:'agent',component:AgentComponent},
-  {path:'archive',component:ArchiveComponent},
-  {path:'dash',component:DashComponent},
-  //test
-  {path:'pro',component:Projet1Component},
-  {path:'edit',component:EditComponent},
-  {path:'newticket',component:TicketsComponent},
-  //end test
+  
+  {canActivate: [AuthGuard],path:'agent',component:AgentComponent},
+  {canActivate: [AuthGuard],path:'archive',component:ArchiveComponent},
+  {canActivate: [AuthGuard],path:'dash',component:DashComponent},
   
   {
     //canActivate: [AuthGuard],

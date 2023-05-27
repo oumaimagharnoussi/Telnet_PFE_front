@@ -51,8 +51,6 @@ import { PopupComponent } from './components/user/popup/popup.component';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { TicketComponent } from './components/ticket/ticket.component';
 import { AddTicketComponent } from './components/ticket/add-ticket/add-ticket.component';
-
-import { Projet1Component } from './components/test/projet1/projet1.component';
 import { EditComponent } from './components/test/edit/edit.component';
 
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -89,7 +87,6 @@ export const CUSTOM_DT_FORMATS = {
     PopupComponent,
     TicketComponent,
     AddTicketComponent,
-    Projet1Component,
     EditComponent,
     TicketsComponent,
     DialogComponent,

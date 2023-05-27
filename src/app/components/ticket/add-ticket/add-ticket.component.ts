@@ -90,6 +90,7 @@ ticket:Ticket;
   selectedGroup: Groupe;
   userSearch = new FormControl('');
   user:User[];
+  etat:Etat;
   userId:number;
   userGroup: string;
   public lastName: string;
@@ -99,7 +100,7 @@ ticket:Ticket;
   selectedTicket: any;
   commentaires: Commentaire[];
  // halfDay: HalfDay;
- halfDay: HalfDay = HalfDay.DansLaSemaine;
+ halfDay: HalfDay = HalfDay.AsSoonAsPossible;
   halefDayItems = Object.values(HalfDay); // Suppression de la méthode map car elle n'est pas nécessaire
 //selectedHalefDayItem: HalfDay = this.halefDayItems[0];
 //selectedTicket: Ticket;
@@ -142,7 +143,7 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
   constructor(private formBuilder: FormBuilder, private mailService: MailService,private apicommentaire:CommentaireService,private route: ActivatedRoute,
     private notificationService: NotificationService,private workFromHomeService: WorkFromHomeService,private dialogRef: MatDialogRef<AddTicketComponent>,
     @Inject(MAT_DIALOG_DATA) public editData:any,private api:GroupService, private authservice:AuthService,private apiuser: ApiService,private http: HttpClient,
-    public dialog: MatDialogRef<AddTicketComponent>,public apiTicket:TicketService, private apiEtat:StateService,private apiSite:SiteService) {}
+    public dialog: MatDialogRef<AddTicketComponent>,public apiTicket:TicketService, private apistate: StateService, private apiEtat:StateService,private apiSite:SiteService) {}
 
     ngOnInit(): void {
      // this.getCommentaires();
@@ -186,6 +187,7 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
         endDate: ['', Validators.required],
         priorite: ['', Validators.required],
         type: ['', Validators.required],
+        prisEnChargeId: [''],
         id: [''],
         description: [''],
         File: [''],
@@ -194,11 +196,11 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
   
       function processHalfDay(halfDay: HalfDay) {
         switch (halfDay) {
-          case HalfDay.DesQuePossible:
-            console.log("Dès que possible");
+          case HalfDay.AsSoonAsPossible:
+            console.log("As Soon As Possible");
             break;
-          case HalfDay.DansLHeureQuiSuit:
-            console.log("Dans l'heure qui suit");
+          case HalfDay.InTheNextHour:
+            console.log("In The Next Hour");
             break;
           // Ajoutez les autres cas ici
           default:
@@ -206,7 +208,7 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
         }
       }
   
-      processHalfDay(HalfDay.Dans1Jour); // Affiche : "Dans 1 jour"
+      processHalfDay(HalfDay.In1Day); // Affiche : "Dans 1 jour"
   
       this.apiEtat.getEtats().subscribe(data => {
         this.etats = data;
@@ -226,7 +228,7 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
           description: this.editData.description,
           halfDay: this.editData.halfDay,
           userId: this.editData.userId,
-         // PrisEnChargePar: this.editData.PrisEnChargePar,
+          prisEnChargeId: this.editData.prisEnChargeId,
           id: this.editData.id,
           dayNumber: this.editData.dayNumber,
           file: this.editData.file,
@@ -355,21 +357,21 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
  
 
   types = [
-    { value: Type.Assistance_diverse, label: 'Assistance diverse' },
-    { value: Type.impression_locale, label: 'Impression locale' },
-    { value: Type.impression_reseau, label: 'Impression reseau' },
-    { value: Type.Droit_d_acces_initial, label: 'Droit d\'acces initial' },
-    { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
-    { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
+    { value: Type.Diversified_aid, label: 'Diversified aid' },
+    { value: Type.Local_printing, label: 'Local printing' },
+    { value: Type.Network_printing, label: 'Network printing' },
+    { value: Type.Initial_right_of_access, label: 'Initial right of access' },
+    { value: Type.Right_of_access_change, label: 'Right of access change' },
+    { value: Type.Right_of_access_reviewed, label: 'Right of access reviewed' }
   ];
   
   halfDays=[
-    { value: HalfDay.DesQuePossible, label: 'Des que possible' },
-    { value: HalfDay.DansLHeureQuiSuit, label: 'Dans l\'heure qui suit' },
-    { value: HalfDay.DansLaDemiJournee, label: 'Dans la demi journée' },
-    { value: HalfDay.Dans1Jour, label: 'Dans 1 Jour' },
-    { value: HalfDay.Dans2Jours, label: 'Dans 2 Jours' },
-    { value: HalfDay.DansLaSemaine, label: 'Dans La Semaine' }
+    { value: HalfDay.AsSoonAsPossible, label: 'As Soon As Possible' },
+    { value: HalfDay.InTheNextHour, label: 'In The Next Hour' },
+    { value: HalfDay.InAHalfDay, label: 'In A Half Day' },
+    { value: HalfDay.In1Day, label: 'In 1 DaY' },
+    { value: HalfDay.In2Days, label: 'In 2 Days' },
+    { value: HalfDay.InAWeek, label: 'In A Week' }
   ]
   /*applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
@@ -421,12 +423,12 @@ addTicket(){
       this.apiTicket.createTicket(this.productForm.value)
       .subscribe({
         next:(res)=>{
-          this.notificationService.success("User added successfully");
+          this.notificationService.success("Ticket added successfully");
           this.productForm.reset();
           this.dialog.close('save');
         },
         error:()=>{
-          this.notificationService.danger("Error while adding the user")
+          this.notificationService.danger("Error while adding the ticket")
         }
       })
     }
@@ -434,7 +436,6 @@ addTicket(){
     this.updateticket()
   }
 }
-
 
 updateticket(){
   this.apiTicket.updateTicket(this.editData.ticketId, this.productForm.value)

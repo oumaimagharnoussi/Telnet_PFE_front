@@ -27,12 +27,12 @@
 
 
 
-                  <h3 class="mat-subheader col-sm-2">Resource</h3>
-                  <div class="col-sm-10">
-                    <mat-form-field class="search-input col-sm-7">
-                      <input placeholder="Search here..." matInput name="searchInput"  (input)="applyFilter($event)" />
-                    </mat-form-field>
-                  </div>
+<h3 class="mat-subheader col-sm-2">Priority</h3>
+<div class="col-sm-10">
+<mat-form-field class="search-input col-sm-7">
+  <input placeholder="Search priority..." matInput name="prioritySearchInput" (input)="applyFilterprioritye($event)" />
+</mat-form-field>
+</div>
                   <h3 class="mat-subheader col-sm-2">Activity</h3>
                   <div class="col-sm-10">
                     <mat-form-field class="search-input col-sm-7">
@@ -40,13 +40,21 @@
                     </mat-form-field>
                   </div>
                 </mat-list-item>
-              <mat-list-item>
+
+
+                
+                <mat-list-item>
                   <h3 class="mat-subheader col-sm-2">Type</h3>
                   <div class="col-sm-10">
                   <mat-form-field class="search-input col-sm-7">
                     <input placeholder="Search type..." matInput name="typeSearchInput" (input)="applyFiltertype($event)" />
                   </mat-form-field>
+             
                 </div>
+
+
+
+                
                   <!-- site -->
               
               
@@ -148,6 +156,16 @@
       <mat-cell *matCellDef="let ticket">{{ ticket.dayNumber }}</mat-cell>
   </ng-container>
 
+  <!--<ng-container matColumnDef="time limit">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Time limit</mat-header-cell>
+    <mat-cell *matCellDef="let ticket">{{ ticket.delaiValue}}</mat-cell>
+  </ng-container>-->
+
+  <ng-container matColumnDef="priorite">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Priority</mat-header-cell>
+    <mat-cell *matCellDef="let ticket">{{ ticket.prioriteValue }}</mat-cell>
+  </ng-container>
+
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
     <mat-cell *matCellDef="let ticket">{{ ticket.typeValue }}</mat-cell>
@@ -170,20 +188,11 @@
     <ng-container matColumnDef="buttons">
       <mat-header-cell *matHeaderCellDef></mat-header-cell>
       <mat-cell *matCellDef="let ticket">
-        <button class="btn btn-mini btn-primary m-r-5 ripple light f-right" (click)="editticket(ticket)" type="button" matTooltip="Edit"
-       
-        >
-          
-         <!--<em class="material-icons">done</em></button>
-        <button class="btn btn-mini btn-danger m-r-5 ripple light" type="button" matTooltip="Reject">
-         
-          <em class="material-icons">cancel</em></button>
-        <button class="btn btn-mini btn-primary m-r-5 ripple light" type="button"
-           matTooltip="Edit">-->
-          
+        <button class="btn btn-mini btn-primary m-r-5 ripple light f-right" (click)="editticket(ticket)" type="button" matTooltip="Edit" [disabled]="ticket.etatLabel !== 'Emitted' && selectedGroup?.libelle !== 'Support'">
           <em class="material-icons">edit</em>
         </button>
-        <button class="btn btn-mini btn-danger ripple light" (click)="deleteticket(ticket.ticketId)" type="button" matTooltip="Delete">
+        
+        <button class="btn btn-mini btn-danger ripple light" (click)="deleteticket(ticket.ticketId)" type="button" matTooltip="Delete" [disabled]="ticket.etatLabel !== 'Emitted' && selectedGroup?.libelle !== 'Support'">
           
           
           <em class="material-icons">delete</em></button>

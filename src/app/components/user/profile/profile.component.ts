@@ -15,6 +15,7 @@ import { ChangepasswordService } from 'app/services/changepassword.service';
 import { GroupService } from 'app/services/group.service';
 import { NotificationService } from 'app/services/shared';
 import { SiteService } from 'app/services/site.service';
+import { UpdateProfileService } from 'app/services/update-profile.service';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 @Component({
   selector: 'app-profile',
@@ -54,7 +55,8 @@ currentUser: any;
   private renderer: Renderer2,
   private authservice:AuthService,private api:GroupService,
   private act:ActivitieService,
-  private servicepass:ChangepasswordService, private apisite:SiteService
+  private servicepass:ChangepasswordService, private apisite:SiteService,
+  private apiprofile:UpdateProfileService
   ) {}
 
   ngOnInit(): void {
@@ -154,7 +156,7 @@ currentUser: any;
       };
     
       // Call the updateUser method with the updated user data
-      this.auth.updateUser(userId, user).subscribe({
+      this.apiprofile.updateProfile(userId, user).subscribe({
         next: (res) => {
           console.log(res); // Log the response
           this.notificationService.success("User updated successfully");

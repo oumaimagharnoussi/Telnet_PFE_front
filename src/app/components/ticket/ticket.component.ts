@@ -4,11 +4,11 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { DateTimeService, ExcelService, MailService, NotificationService, SearchFilterService, SortService } from 'app/services/shared';
 import { WorkFromHomeRequest, WorkHomeRequestStatus, WorkHomeRequestStatusLabel } from 'app/models/human-resources/work-from-home';
-import { Groups, HalfDay, Identifier, Type, User } from 'app/models/shared';
+import { Groups, HalfDay, Identifier, Priorite, Type, User } from 'app/models/shared';
 
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { Subject, Subscription, of } from 'rxjs/index';
+import { Subject, Subscription, forkJoin, of } from 'rxjs/index';
 
 import { PaginatorPipe } from 'app/pipes/shared';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
@@ -37,7 +37,7 @@ import { SiteService } from 'app/services/site.service';
 export class TicketComponent implements OnInit, OnDestroy {
 
   @Input() workFromHomeRequests: WorkFromHomeRequest[];
-  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber', 'type',
+  displayedColumns = ['userNumber', 'userFullName', 'activityName', 'startDate', 'endDate', 'dayNumber'/*,'time limit'*/,'priorite', 'type',
     'site', 'state', 'buttons'];
   userId: number;
   user: User = new User();
@@ -52,7 +52,7 @@ export class TicketComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
   dataSource: MatTableDataSource<any>;
   public isHalfDayChecked: boolean;
-  currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
+
   forbiddenRejectValidate = true;
   listView = false;
   selectedWorkHomeRequestId: number;
@@ -70,6 +70,7 @@ public telnetId:number;
   groupId: number;
   groups: Groupe[];
   types: Type;
+  priorites: Priorite;
   paginatorPipe: PaginatorPipe;
   dropdownSettings = {};
   dropdownSettingsStatus = {};
@@ -140,13 +141,7 @@ public telnetId:number;
     const userGroupId = decodedToken.Groups;
     this.getGroupById(userGroupId);
 
-
-    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
-    currentUser.userId = this.userId;
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
   }
-
-
   //////////////////////
   getGroupById(groupId: number) {
     this.apigroup.getGroupeById(groupId)
@@ -192,12 +187,11 @@ public telnetId:number;
     this.selectedActivitiesIdentifiers = [];
   }
 
-
-  getAllTickets() {
+ getAllTickets() {
     this.api.getTickets().subscribe({
       next: (res) => {
         const users = {};
-
+console.log(res);
         const getUserById = (userId) => {
           if (users[userId]) {
             return of(users[userId]);
@@ -233,6 +227,23 @@ public telnetId:number;
 
           });
 
+          const prioriteObject = this.priorite.find((obj) => obj.value === ticket.priorite);
+
+          // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
+          if (prioriteObject) {
+            ticket.prioriteValue = prioriteObject.label;
+          } else {
+            ticket.prioriteValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
+          }
+
+          const delaiObject = this.halfDays.find((obj) => obj.value === ticket.halfDay);
+
+          // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
+          if (delaiObject) {
+            ticket.delaiValue = delaiObject.label;
+          } else {
+            ticket.delaiValue = ''; // Valeur par défaut si aucune correspondance n'est trouvée
+          }
           const typeObject = this.type.find((obj) => obj.value === ticket.type);
 
           // Si l'objet de type est trouvé, attribuer la valeur du label à la propriété 'typeValue' du ticket
@@ -265,13 +276,12 @@ public telnetId:number;
       }
     });
   }
-
   getEtatClass(etatLabel: string): string {
-    if (etatLabel === 'Emis') {
+    if (etatLabel === 'Emitted') {
       return 'gray-background';
-    } else if (etatLabel === 'Pris en charge') {
+    } else if (etatLabel === 'Supported') {
       return 'green-background';
-    } else if (etatLabel === 'Résolu') {
+    } else if (etatLabel === 'Resolved') {
       return 'bleu-background';
     } else if (etatLabel === 'Clos') {
       return 'black-background';
@@ -309,19 +319,30 @@ public telnetId:number;
   }
 
 
-
-
+  halfDays=[
+    { value: HalfDay.AsSoonAsPossible, label: 'As Soon As Possible' },
+    { value: HalfDay.InTheNextHour, label: 'In The Next Hour' },
+    { value: HalfDay.InAHalfDay, label: 'In A Half Day' },
+    { value: HalfDay.In1Day, label: 'In 1 DaY' },
+    { value: HalfDay.In2Days, label: 'In 2 Days' },
+    { value: HalfDay.InAWeek, label: 'In A Week' }
+  ]
   type = [
-    { value: Type.Assistance_diverse, label: 'Assistance diverse' },
-    { value: Type.impression_locale, label: 'Impression locale' },
-    { value: Type.impression_reseau, label: 'Impression reseau' },
-    { value: Type.Droit_d_acces_initial, label: 'Droit d\'acces initial' },
-    { value: Type.Droit_d_acces_changement, label: 'Droit d\'acces changement' },
-    { value: Type.Droit_d_acces_revue, label: 'Droit d\'acces revue' }
+    { value: Type.Diversified_aid, label: 'Diversified aid' },
+    { value: Type.Local_printing, label: 'Local printing' },
+    { value: Type.Network_printing, label: 'Network printing' },
+    { value: Type.Initial_right_of_access, label: 'Initial right of access' },
+    { value: Type.Right_of_access_change, label: 'Right of access change' },
+    { value: Type.Right_of_access_reviewed, label: 'Right of access reviewed' }
   ];
 
-
-
+  priorite = [
+    { value: Priorite.Urgent, label: 'Urgent' },
+   // { value: Priorite.Hight, label: 'Hight', icon: this.URGENT_ICON_hight },
+    { value: Priorite.Medium, label: 'Medium' },
+    { value: Priorite.Low, label: 'Low' }
+  ];
+//applyFilter ressource
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
 
@@ -375,7 +396,18 @@ public telnetId:number;
     }
 
   }
+  applyFilterprioritye(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      return data.prioriteValue.trim().toLowerCase().indexOf(filter) !== -1;
+    };
+    this.dataSource.filter = filterValue.trim().toLowerCase();
 
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+
+  }
 
 
   applyFilterState(event: Event) {

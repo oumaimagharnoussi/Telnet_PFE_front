@@ -54,9 +54,7 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
           <td mat-cell *matCellDef="let user">
-            <button mat-icon-button (click)="userDetails(user.userId)" color="primary">
-              <mat-icon class="bi bi-eye-fill"></mat-icon>
-            </button> 
+            
             <button mat-icon-button (click)="editgroup(user)"  color="#00FF00">
               <mat-icon class="edit-icon" color="primary">edit</mat-icon>
             </button>

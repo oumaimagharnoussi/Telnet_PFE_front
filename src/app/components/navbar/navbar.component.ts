@@ -6,6 +6,8 @@ import { ApiService } from 'app/services/api.service';
 import { UserStoreService } from 'app/services/user-store.service';
 import { ActivitieService } from 'app/services/activitie.service';
 import { Activitie } from 'app/models/Activitie.model';
+import { Groupe } from 'app/models/groupe.model';
+import { GroupService } from 'app/services/group.service';
 
 @Component({
   selector: 'app-navbar',
@@ -96,7 +98,9 @@ export class NavbarComponent implements OnInit {
   public userName: string;
   public lastName: string;
   public Activitie:string;
-  constructor( private api : ApiService,private act:ActivitieService, private userStore: UserStoreService, private router: Router,private auth: AuthService) { }
+  public groupId:number;
+  selectedGroup: Groupe;
+  constructor( private api : ApiService,private apigroup:GroupService,private act:ActivitieService, private userStore: UserStoreService, private router: Router,private auth: AuthService) { }
 
   ngOnInit(): void {
     this.api.getUsers()
@@ -124,7 +128,7 @@ export class NavbarComponent implements OnInit {
     this.userName = decodedToken.name;
     this.lastName=decodedToken.lastname;
     this.picture=decodedToken.pictureUrl;
-
+    this.groupId = decodedToken.Groups;
 
 
 
@@ -133,7 +137,9 @@ export class NavbarComponent implements OnInit {
       this.Activitie = decodedToken.activitie;
       
 
-      
+      const userGroupId = decodedToken.Groups;
+      this.getGroupById(userGroupId);
+  
       
 
       const userActivitieId = decodedToken.activitie;
@@ -142,6 +148,10 @@ export class NavbarComponent implements OnInit {
   getActivitieById(activityId: number) {
     this.act.getActivitieById(activityId)
       .subscribe(activitie => this.selectedActivitie = activitie);
+  }
+  getGroupById(groupId: number) {
+    this.apigroup.getGroupeById(groupId)
+      .subscribe(group => this.selectedGroup = group);
   }
   logout(){
     this.auth.signOut();

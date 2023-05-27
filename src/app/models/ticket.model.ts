@@ -11,7 +11,6 @@ export class Ticket {
   endDate: Date;
   description: string;
   userId: number;
-  prisEnChargePar: number;
   user: User;
   telnetId:number;
   id: number; //id de class Etat
@@ -20,5 +19,6 @@ export class Ticket {
   file: string;
   commentaires: Commentaire[];
   halfDay : HalfDay;
-  
+  prisEnChargeId: number | null;
+  PrisEnCharge: User;
 }
