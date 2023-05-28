@@ -187,11 +187,11 @@ ticketComments: { [ticketId: number]: Commentaire[] } = {};
         endDate: ['', Validators.required],
         priorite: ['', Validators.required],
         type: ['', Validators.required],
-        prisEnChargeId: [''],
-        id: [''],
+     //   prisEnChargeId: [''],
+       // id: [''],
         description: [''],
-        File: [''],
-        commentaire: ['']
+        file: ['']
+      //  commentaire: ['']
       });
   
       function processHalfDay(halfDay: HalfDay) {
@@ -419,16 +419,21 @@ applyFilter(event: Event) {
 
 addTicket(){
   if(!this.editData){
+    
     if(this.productForm.valid){
+     // console.log(this.productForm.value)
       this.apiTicket.createTicket(this.productForm.value)
       .subscribe({
         next:(res)=>{
+          //console.log("Next");
           this.notificationService.success("Ticket added successfully");
           this.productForm.reset();
           this.dialog.close('save');
         },
         error:()=>{
-          this.notificationService.danger("Error while adding the ticket")
+         
+         console.log("ERROR");
+         this.notificationService.danger("Error while adding the ticket")
         }
       })
     }

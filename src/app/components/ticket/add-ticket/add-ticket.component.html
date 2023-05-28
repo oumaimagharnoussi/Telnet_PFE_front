@@ -110,7 +110,7 @@
                   <label for="fileInput">
                     <mat-icon class="attach-icon">attach_file</mat-icon>
                   </label>
-                  <input type="file" id="fileInput" (change)="onFileSelected($event)" formControlName="File">
+                  <input type="file" id="fileInput" (change)="onFileSelected($event)" formControlName="file">
                   <a *ngIf="fileName" [href]="fileUrl" download="{{ fileName }}">{{ fileName }}</a>
                 </div>
                 

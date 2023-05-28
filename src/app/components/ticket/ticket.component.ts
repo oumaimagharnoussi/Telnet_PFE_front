@@ -21,7 +21,7 @@ import { Ticket } from 'app/models/ticket.model';
 import { StateService } from 'app/services/state.service';
 import { ApiService } from 'app/services/api.service';
 import { ActivitieService } from 'app/services/activitie.service';
-import { tap } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import { FormGroup } from '@angular/forms';
 import { Etat } from 'app/models/Etat.model';
 import { GroupService } from 'app/services/group.service';
@@ -209,8 +209,15 @@ console.log(res);
         const getActivitieById = (activityId) => {
           return this.apiactivitie.getActivitieById(activityId);
         };
-
+       
+          res = res.filter((ticket) => ticket.userId == this.userId); 
+      
         const mappedResults = res.map((ticket) => {
+          console.log(ticket.userId);
+          console.log(this.userId);
+         // if(ticket.userId==this.userId){
+
+         
           this.apistate.getEtatById(ticket.id).subscribe((etat) => {
             ticket.etatLabel = etat.libelle;
           });
@@ -264,7 +271,9 @@ console.log(res);
           getSiteById(ticket.telnetId).subscribe((site) => {
             ticket.siteLabel = site.libelle;
           });
+       // }
           return ticket;
+        
         });
 
         this.dataSource = new MatTableDataSource(mappedResults);
