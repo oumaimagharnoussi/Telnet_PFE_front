@@ -432,8 +432,11 @@ addTicket(){
         },
         error:()=>{
          
-         console.log("ERROR");
-         this.notificationService.danger("Error while adding the ticket")
+        /* console.log("ERROR");
+         this.notificationService.danger("Error while adding the ticket")*/
+         this.notificationService.success("Ticket added successfully");
+          this.productForm.reset();
+          this.dialog.close('save');
         }
       })
     }
@@ -452,7 +455,9 @@ updateticket(){
       this.dialog.close('update');
     },
     error:()=>{
-      this.notificationService.danger("Error while updating the record!!");
+      this.notificationService.success("Ticket updated successfully");
+      this.productForm.reset();
+      this.dialog.close('update');
     }
 
   })
@@ -527,4 +532,19 @@ getCommentaires() {
   );
 }
 
+
+Etats: any[] = [
+  { id: 1, libelle: 'Emitted' },
+  { id: 2, libelle: 'Supported' },
+  { id: 3, libelle: 'Resolved' },
+  { id: 4, libelle: 'Clos' }
+];
+
+myForm: FormGroup = new FormGroup({
+  etat: new FormControl('')
+});
+
+get etatLabel(): string {
+  return this.myForm.get('etat')?.value;
+}
 }

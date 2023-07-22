@@ -26,6 +26,7 @@ import { FormGroup } from '@angular/forms';
 import { Etat } from 'app/models/Etat.model';
 import { GroupService } from 'app/services/group.service';
 import { SiteService } from 'app/services/site.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 
 
@@ -158,7 +159,7 @@ public telnetId:number;
 
   openEditRequestDialog() {
     const dialogRef = this.dialog.open(AddTicketComponent, {
-      width: '500px',
+      width: '700px',
       height: '600px'
     });
   }
@@ -191,7 +192,7 @@ public telnetId:number;
     this.api.getTickets().subscribe({
       next: (res) => {
         const users = {};
-console.log(res);
+
         const getUserById = (userId) => {
           if (users[userId]) {
             return of(users[userId]);
@@ -209,14 +210,10 @@ console.log(res);
         const getActivitieById = (activityId) => {
           return this.apiactivitie.getActivitieById(activityId);
         };
-       
+       if(this.groupId!=1){
           res = res.filter((ticket) => ticket.userId == this.userId); 
-      
+       }
         const mappedResults = res.map((ticket) => {
-          console.log(ticket.userId);
-          console.log(this.userId);
-         // if(ticket.userId==this.userId){
-
          
           this.apistate.getEtatById(ticket.id).subscribe((etat) => {
             ticket.etatLabel = etat.libelle;
@@ -313,18 +310,25 @@ console.log(res);
   }
 
   deleteticket(ticketId: number) {
-    this.api.deleteTicket(ticketId)
-      .subscribe({
-        next: (res) => {
-          this.notificationService.success('This Ticket is Deleted');
-         // this.mailService.ticketDeleted(ticket);
-          this.getAllTickets();
-        },
-        error: () => {
-          this.notificationService.danger('Delete Ticket failed')
-        }
-      })
-
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      height:'200px',
+      data: 'Are you sure you want to delete this ticket?',
+    });
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.api.deleteTicket(ticketId).subscribe({
+          next: (res) => {
+            this.notificationService.success('This Ticket is Deleted');
+            this.getAllTickets();
+          },
+          error: () => {
+            this.notificationService.danger('Delete Ticket failed');
+          },
+        });
+      }
+    });
   }
 
 

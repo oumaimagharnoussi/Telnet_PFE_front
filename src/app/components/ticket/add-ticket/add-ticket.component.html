@@ -51,13 +51,13 @@
  
               <div class="row m-b-6">
                 <mat-form-field class="date-field col-sm-6">
-                  <input matInput [matDatepicker]="picker11" placeholder="From" (keypress)="dateOnly($event)"  formControlName="startDate" required>
+                  <input matInput [matDatepicker]="picker11" placeholder="From" (keypress)="dateOnly($event)"  formControlName="startDate" >
                   <mat-datepicker-toggle matSuffix [for]="picker11"></mat-datepicker-toggle>
                   <mat-datepicker #picker11></mat-datepicker>
                 </mat-form-field>
                 
                 <mat-form-field class="date-field col-sm-6">
-                  <input name="EndDate" matInput [matDatepicker]="picker22" placeholder="To" (keypress)="dateOnly($event)"  formControlName="endDate" required>
+                  <input name="EndDate" matInput [matDatepicker]="picker22" placeholder="To" (keypress)="dateOnly($event)"  formControlName="endDate" >
                   <mat-datepicker-toggle matSuffix [for]="picker22"></mat-datepicker-toggle>
                   <mat-datepicker #picker22></mat-datepicker>
                 </mat-form-field>
@@ -87,11 +87,13 @@
  
                 <div *ngIf="editData && selectedGroup?.libelle === 'Support'">
                   <mat-form-field class="col-sm-6">
-                    <mat-select placeholder="etat" name="etat" formControlName="id">
-                      <mat-option *ngFor="let etat of etats" [value]="etat.id">{{ etat.libelle }}</mat-option>
+                    <mat-select placeholder="etat" name="etat" formControlName="etat">
+                      <mat-option *ngFor="let etat of Etats" [value]="etat.libelle" [disabled]="etat.libelle === 'Emitted'  || etat.libelle === 'Supported' || etatLabel === 'Resolved'">{{ etat.libelle }}</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
+                
+                
                 
                 
 <br>                

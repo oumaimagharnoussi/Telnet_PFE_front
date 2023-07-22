@@ -15,6 +15,7 @@ import { Activitie } from 'app/models/Activitie.model';
 import { AuthService } from 'app/services/auth.service';
 import { Site } from 'app/models/site.model';
 import { SiteService } from 'app/services/site.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-agent',
@@ -122,18 +123,26 @@ this.dialog.open(DialogagentComponent,{
 })
 }
 
-deleteteam(userId:number){
-  this.api.deleteUser(userId)
-  .subscribe({
-    next:(res)=>{
-      this.notificationService.success("User Delete Successfully");
-      this.getAllTeams();
-    },
-    error:()=>{
-      this.notificationService.danger("Error while deleting the user!!")
-    }
-  })
+deleteteam(userId: number) {
+  const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    width: '400px',
+    height:'200px',
+    data: 'Are you sure you want to delete this user?',
+  });
 
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      this.api.deleteUser(userId).subscribe({
+        next: (res) => {
+          this.notificationService.success('User Deleted Successfully');
+          this.getAllTeams();
+        },
+        error: () => {
+          this.notificationService.danger('Error while deleting the user!!');
+        },
+      });
+    }
+  });
 }
 
 

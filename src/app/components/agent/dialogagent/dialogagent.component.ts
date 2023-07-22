@@ -129,5 +129,11 @@ export class DialogagentComponent implements OnInit {
   
       })
     }
+    close() {
+      this.dialog.close();
+    }
+    cancel() {
+      this.close();
+    }
   }
   

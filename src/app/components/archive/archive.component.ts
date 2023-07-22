@@ -204,7 +204,9 @@ public telnetId:number;
         const getActivitieById = (activityId) => {
           return this.apiactivitie.getActivitieById(activityId);
         };
-  
+        if(this.groupId!=1){
+          res = res.filter((ticket) => ticket.userId == this.userId); 
+       }
         const mappedResults = res.map((ticket) => {
           // Skip tickets with id other than 5
           if (ticket.id !== 5) {

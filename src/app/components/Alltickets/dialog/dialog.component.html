@@ -1,25 +1,26 @@
-<div class="p-4">
-    <header class="d-flex justify-content-between align-items-center" >
-        <h1 mat-dialog-title>New team</h1>
-      <button mat-flat-button matDialogClose class="text-danger" style="margin-left:auto;">
-        <mat-icon>close</mat-icon>
-      </button>
-    </header>
-    
+<div class="modal_header">
+  <div class="modal_title">
+     
+      <span>
+          <em class="material-icons modal-close" (click)="close()">close</em>
+      </span>
+      <h1 mat-dialog-title style="display: inline-block;">New Team</h1>
+  </div>
+</div>
 
+<div class="modal_body">
+<div class="p-20 z-depth-top-0 waves-effect" placement="bottom">
+        <form [formGroup]="productForm" >
+            
 
-        <form class="example-form" [formGroup]="productForm" >
-            <mat-card>
-            <mat-card-content>
-
-    <mat-form-field appearance="outline">
-        <mat-label>Name</mat-label>
-        <input formControlName="libelle" matInput placeholder="Name"/>
+    <mat-form-field class="col-sm-12">
+        
+        <input formControlName="libelle" matInput type="text" placeholder="Name"/>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Users</mat-label>
-      <mat-select formControlName="selectedUsers" multiple>
+    <mat-form-field class="col-sm-12">
+      
+      <mat-select formControlName="selectedUsers" placeholder="Users" multiple>
         <!-- Add a search input -->
         <mat-option>
           <ngx-mat-select-search  [placeholderLabel]="'Search'"
@@ -40,15 +41,22 @@
     
     
 
-<div mat-dialog-action [align]="'end'">
-    <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-    <button style="margin-left: 8px;" mat-raised-button color="primary" (click)="addGroup()">{{actionBtn}}</button>
+    <div class="row m-t-20">
+      <div class="col-lg-12">
+          <div class="row f-right">
+              <div class="col-lg-12">
+                  <button type="button" class="btn btn-outline-primary" (click)="cancel()">Cancel</button>
+                  &nbsp; &nbsp;
+    <button type="submit" class="btn btn-primary ripple light btn-md" (click)="addGroup()">{{actionBtn}}</button>
+  </div>
+</div>
+</div>
 </div>
 
- </mat-card-content>
-    </mat-card>
-      </form>
-</div>     
+</form>
+    
+</div>
+</div>   
 
 
 

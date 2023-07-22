@@ -27,15 +27,14 @@
       </ng-container>
     
       <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
-        <td mat-cell *matCellDef="let group"> 
-          <button mat-icon-button (click)="editgroup(group)" color="primary">
-            <mat-icon>edit</mat-icon>
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let group"> 
+          <button class="btn btn-mini btn-primary m-r-5 ripple light f-right" type="button" matTooltip="Edit" (click)="editgroup(group)" >
+            <em class="material-icons">edit</em>
           </button>
-          <button mat-icon-button (click)="deleteteam(group.groupId)" color="warn">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
+          <button  class="btn btn-mini btn-danger ripple light" (click)="deleteteam(group.groupId)" type="button" matTooltip="Delete">
+            <em class="material-icons">delete</em></button>
+          </mat-cell>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

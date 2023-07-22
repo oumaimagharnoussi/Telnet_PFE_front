@@ -63,6 +63,7 @@ import {QRCodeModule} from 'angular2-qrcode'
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { ArchiveComponent } from './components/archive/archive.component';
 import { DashComponent } from './components/dash/dash.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 export const CUSTOM_DT_FORMATS = {
   parse: {
     dateInput: 'L',
@@ -96,6 +97,7 @@ export const CUSTOM_DT_FORMATS = {
     DetailComponent,
     ArchiveComponent,
     DashComponent,
+    ConfirmationDialogComponent,
    
     
    

@@ -1,0 +1,12 @@
+<div class="p-20 z-depth-top-0 waves-effect">
+<h2 mat-dialog-title style="display: inline-block;">Delete Confirmation</h2>
+<mat-dialog-content>
+  <p>{{ message }}</p>
+</mat-dialog-content>
+<div mat-dialog-actions [align]="'end'">
+  <button type="button" class="btn btn-outline-primary" (click)="cancel()">Cancel</button>
+  &nbsp; &nbsp;
+  <button  [mat-dialog-close]="true" type="button" color="warn" class="btn btn-outline-danger ">Delete</button>
+
+</div>
+</div>

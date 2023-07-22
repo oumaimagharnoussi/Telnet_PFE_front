@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '../../../../../node_modules/@angular/router';
 import { JwtHelper } from '../../../helpers';
-import { FormBuilder, FormGroup, NgForm, Validators } from '../../../../../node_modules/@angular/forms';
+
 import { AuthenticationService, NotificationService } from '../../../services/shared';
 import { UserIdentifiers } from 'app/models/shared';
 import { ResetPassword } from 'app/models/ResetPassword.model';
 import { ConfirmPasswordValidator } from 'app/helpers/confirm-password.validator';
 import ValidateForm from 'app/helpers/validateform';
 import { ResetPasswordService } from 'app/services/reset-password.service';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-reset-password',
@@ -15,9 +16,9 @@ import { ResetPasswordService } from 'app/services/reset-password.service';
   styleUrls: []
 })
 export class ResetPasswordComponent implements OnInit {
-  private jwtHelper: JwtHelper = new JwtHelper();
+ private jwtHelper: JwtHelper = new JwtHelper();
 
- // @ViewChild('f', {static: true}) f: NgForm;
+  @ViewChild('f', {static: true}) f: NgForm;
   inputValid = true;
   expired = false;
   newPassword: string;
@@ -53,9 +54,10 @@ export class ResetPasswordComponent implements OnInit {
     this.resetPasswordForm = this.fb.group({
       password: [null, Validators.required],
       confirmPassword: [null, Validators.required]
-    },{
-      validator: ConfirmPasswordValidator("password","confirmPassword")
+    }, {
+      validators: ConfirmPasswordValidator("password", "confirmPassword")
     });
+    
 
     this.route.queryParams.subscribe(val=>{
       this.emailToReset = val['email'];
@@ -68,7 +70,7 @@ export class ResetPasswordComponent implements OnInit {
 
 
 
-    /*this.userIdentifiers = new UserIdentifiers();
+    this.userIdentifiers = new UserIdentifiers();
     this.route.params.subscribe(params => {
       this.token = params['token'];
       this.expires_in = this.jwtHelper.getTokenExpirationDate(this.token);
@@ -83,7 +85,7 @@ export class ResetPasswordComponent implements OnInit {
       this.router.navigate(['/auth/login']);
     } else {
       this.expired = false;
-    }*/
+    }
   }
 
  /*resetPassword() {
@@ -111,10 +113,10 @@ export class ResetPasswordComponent implements OnInit {
       this.notificationService.danger('Please fill a strong new password.');
     }
   }
-
+*/
   getPasswordStrength(passwordStrength: boolean) {
     this.passwordStrength = passwordStrength;
-  }*/
+  }
 
   reset(){
     if(this.resetPasswordForm.valid){

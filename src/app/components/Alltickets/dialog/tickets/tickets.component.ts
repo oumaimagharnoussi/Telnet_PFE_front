@@ -8,6 +8,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Groupe } from 'app/models/groupe.model';
+import { ConfirmationDialogComponent } from 'app/components/confirmation-dialog/confirmation-dialog.component';
 
 
 @Component({
@@ -72,18 +73,26 @@ this.dialog.open(DialogComponent,{
 })
 }
 
-deleteteam(groupId:number){
-  this.api.deleteGroupe(groupId)
-  .subscribe({
-    next:(res)=>{
-      this.notificationService.success("Team Delete Successfully");
-      this.getAllTeams();
-    },
-    error:()=>{
-      this.notificationService.danger("Error while deleting the team!!")
-    }
-  })
+deleteteam(groupId:number) {
+  const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+    width: '400px',
+    height:'200px',
+    data: 'Are you sure you want to delete this team?',
+  });
 
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      this.api.deleteGroupe(groupId).subscribe({
+        next: (res) => {
+          this.notificationService.success('Team Delete Successfully');
+          this.getAllTeams();
+        },
+        error: () => {
+          this.notificationService.danger('Error while deleting the team!!');
+        },
+      });
+    }
+  });
 }
 
 }

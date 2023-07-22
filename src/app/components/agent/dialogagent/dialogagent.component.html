@@ -1,71 +1,77 @@
-<div class="p-4">
-    <header class="d-flex justify-content-between align-items-center" >
-        <h1 mat-dialog-title>New User</h1>
-      <button mat-flat-button matDialogClose class="text-danger" style="margin-left:auto;">
-        <mat-icon>close</mat-icon>
-      </button>
-    </header>
-    
 
+  <div class="modal_header">
+    <div class="modal_title">
+       
+        <span>
+            <em class="material-icons modal-close" (click)="close()">close</em>
+        </span>
+        <h1 mat-dialog-title style="display: inline-block;">New User</h1>
+    </div>
+</div>
 
-    <form class="example-form" [formGroup]="productForm">
-      <mat-card>
-        <mat-card-content>
-          <mat-form-field appearance="outline">
-            <mat-label>userNumber</mat-label>
+<div class="modal_body">
+  <div class="p-20 z-depth-top-0 waves-effect" placement="bottom">
+    <form  [formGroup]="productForm">
+      
+          <mat-form-field class="col-sm-12">
+            
             <input matInput placeholder="userNumber" formControlName="userNumber">
           </mat-form-field>
     
-          <mat-form-field appearance="outline">
-            <mat-label>firstName</mat-label>
+          <mat-form-field class="col-sm-12">
+            
             <input matInput placeholder="firstName" formControlName="firstName">
           </mat-form-field>
     
-          <mat-form-field appearance="outline">
-            <mat-label>lastName</mat-label>
+          <mat-form-field class="col-sm-12">
+            
             <input matInput placeholder="lastName" formControlName="lastName">
           </mat-form-field>
     
-          <mat-form-field appearance="outline">
-            <mat-label>userName</mat-label>
+          <mat-form-field class="col-sm-12">
+            
             <input matInput placeholder="userName" formControlName="userName">
           </mat-form-field>
     
-          <mat-form-field appearance="outline">
-            <mat-label>email</mat-label>
+          <mat-form-field class="col-sm-12">
+            
             <input matInput placeholder="email" formControlName="email">
+          </mat-form-field>
+
+          <mat-form-field class="col-sm-12">
+           
+            <mat-select placeholder="Activitie" formControlName="activityId">
+              <mat-option *ngFor="let activitie of activities" [value]="activitie.activityId">{{ activitie.libelle }}</mat-option>
+            </mat-select>
           </mat-form-field>
     
           <mat-form-field class="col-sm-6">
-            <mat-label>Team</mat-label>
-            <mat-select placeholder="Select a team" formControlName="groupId">
+            
+            <mat-select placeholder="Team" formControlName="groupId">
               <mat-option *ngFor="let group of groups" [value]="group.groupId">{{ group.libelle }}</mat-option>
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field class="col-sm-6">
-            <mat-label>Activitie</mat-label>
-            <mat-select placeholder="Select a activitie" formControlName="activityId">
-              <mat-option *ngFor="let activitie of activities" [value]="activitie.activityId">{{ activitie.libelle }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+          
+
+          
 
           <mat-form-field class="col-sm-6">
-            <mat-label>Site</mat-label>
-            <mat-select placeholder="Select a site" formControlName="telnetId">
+            <mat-select placeholder="Site" formControlName="telnetId">
               <mat-option *ngFor="let site of site" [value]="site.telnetId">{{ site.libelle }}</mat-option>
             </mat-select>
           </mat-form-field>
     
           <div mat-dialog-actions [align]="'end'">
-            <button mat-raised-button color="warn" mat-dialog-close>Close</button>
-            <button style="margin-left: 8px;" mat-raised-button color="primary" (click)="addGroup()">{{actionBtn}}</button>
+            <button type="button" class="btn btn-outline-primary" (click)="cancel()">Cancel</button>
+            &nbsp; &nbsp;
+            <button type="submit" class="btn btn-primary ripple light btn-md" (click)="addGroup()">{{actionBtn}}</button>
           </div>
-        </mat-card-content>
-      </mat-card>
+        
     </form>
     
-</div>     
+  </div>
+</div>   
 
 
 

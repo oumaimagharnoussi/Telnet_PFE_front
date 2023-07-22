@@ -115,7 +115,12 @@ export class DialogComponent implements OnInit {
     // Update the list of filtered users
     this.filteredUsers = filteredUsers;
   }
-  
+  close() {
+    this.dialog.close();
+  }
+  cancel() {
+    this.close();
+  } 
 
 
 }
